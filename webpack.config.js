@@ -7,7 +7,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const urlDev = "https://localhost:3000/";
 const localhostOrigin = "https://localhost:3000";
-const prodBaseUrl = (process.env.ADDIN_BASE_URL || "https://sectors.app").trim();
+const prodBaseUrl = (process.env.ADDIN_BASE_URL || "https://sectors-financial-addin.fly.dev").trim();
 const urlProd = prodBaseUrl.endsWith("/") ? prodBaseUrl : `${prodBaseUrl}/`;
 
 /* global require, module, process */

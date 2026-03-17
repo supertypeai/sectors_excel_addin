@@ -11,7 +11,7 @@
   <SupportUrl DefaultValue="https://sectors.app/support"/>
   <AppDomains>
     <AppDomain>https://api.sectors.app</AppDomain>
-    <AppDomain>https://sectors.app</AppDomain>
+    <AppDomain>https://sectors-financial-addin.fly.dev</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Workbook"/>
