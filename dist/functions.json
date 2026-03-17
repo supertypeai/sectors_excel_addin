@@ -1,0 +1,654 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Save your Sectors API key for this workbook.",
+            "id": "SET_API_KEY",
+            "name": "SET_API_KEY",
+            "parameters": [
+                {
+                    "description": "Your Sectors API key.",
+                    "name": "apiKey",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "type": "string"
+            }
+        },
+        {
+            "description": "Screen IDX companies using SQL-like filters.",
+            "id": "SCREEN",
+            "name": "SCREEN",
+            "parameters": [
+                {
+                    "description": "SQL-like filter (e.g. \"sub_sector = 'banks' and pe_ttm < 15\").",
+                    "name": "where",
+                    "type": "string"
+                },
+                {
+                    "description": "Sort field with optional \"-\" prefix for desc (e.g. \"-market_cap\").",
+                    "name": "orderBy",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Max results (default 50, max 200).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Screen IDX companies using natural language.",
+            "id": "SCREEN_NL",
+            "name": "SCREEN_NL",
+            "parameters": [
+                {
+                    "description": "Plain English query (e.g. \"top 10 banks by market cap\").",
+                    "name": "query",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get free float percentage for companies.",
+            "id": "FREE_FLOAT",
+            "name": "FREE_FLOAT",
+            "parameters": [
+                {
+                    "description": "Filter by subsector (e.g. \"banks\").",
+                    "name": "subSector",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get company overview: market cap, sector, ESG, price, listing info.",
+            "id": "COMPANY_OVERVIEW",
+            "name": "COMPANY_OVERVIEW",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get company valuation: PE, PB, PS, PCF ratios over time.",
+            "id": "COMPANY_VALUATION",
+            "name": "COMPANY_VALUATION",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get company financials: income stmt, balance sheet, ratios by year.",
+            "id": "COMPANY_FINANCIALS",
+            "name": "COMPANY_FINANCIALS",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get company dividend history, yield, and payout ratio.",
+            "id": "COMPANY_DIVIDEND",
+            "name": "COMPANY_DIVIDEND",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get company major shareholders and institutional transaction flow.",
+            "id": "COMPANY_OWNERSHIP",
+            "name": "COMPANY_OWNERSHIP",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get subsector statistics: company count, PE distribution.",
+            "id": "SUBSECTOR_STATISTICS",
+            "name": "SUBSECTOR_STATISTICS",
+            "parameters": [
+                {
+                    "description": "Subsector slug (e.g. \"banks\").",
+                    "name": "subSector",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get subsector market cap data and performance.",
+            "id": "SUBSECTOR_MARKET_CAP",
+            "name": "SUBSECTOR_MARKET_CAP",
+            "parameters": [
+                {
+                    "description": "Subsector slug (e.g. \"banks\").",
+                    "name": "subSector",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get subsector valuation: historical PE/PB/PS/PCF with percentile rank.",
+            "id": "SUBSECTOR_VALUATION",
+            "name": "SUBSECTOR_VALUATION",
+            "parameters": [
+                {
+                    "description": "Subsector slug (e.g. \"banks\").",
+                    "name": "subSector",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get subsector growth metrics and forecasts.",
+            "id": "SUBSECTOR_GROWTH",
+            "name": "SUBSECTOR_GROWTH",
+            "parameters": [
+                {
+                    "description": "Subsector slug (e.g. \"banks\").",
+                    "name": "subSector",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get quarterly financial statements for a company.",
+            "id": "QUARTERLY_FINANCIALS",
+            "name": "QUARTERLY_FINANCIALS",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                },
+                {
+                    "description": "Number of recent quarters to retrieve.",
+                    "name": "nQuarters",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Specific report date (YYYY-MM-DD).",
+                    "name": "reportDate",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get revenue/cost breakdown by business segment.",
+            "id": "COMPANY_SEGMENTS",
+            "name": "COMPANY_SEGMENTS",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"ASII\").",
+                    "name": "ticker",
+                    "type": "string"
+                },
+                {
+                    "description": "Year (defaults to latest).",
+                    "name": "financialYear",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get daily close price, volume, and market cap for a ticker.",
+            "id": "DAILY_PRICE",
+            "name": "DAILY_PRICE",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD).",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD).",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get IDX total market capitalization over time.",
+            "id": "IDX_MARKET_CAP",
+            "name": "IDX_MARKET_CAP",
+            "parameters": [
+                {
+                    "description": "Start date (YYYY-MM-DD).",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD).",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get daily closing prices for a stock index.",
+            "id": "INDEX_DAILY",
+            "name": "INDEX_DAILY",
+            "parameters": [
+                {
+                    "description": "Index code (e.g. \"ihsg\", \"lq45\", \"idx30\").",
+                    "name": "indexCode",
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD).",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD).",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get most traded stocks by volume in a date range.",
+            "id": "MOST_TRADED",
+            "name": "MOST_TRADED",
+            "parameters": [
+                {
+                    "description": "Start date (YYYY-MM-DD).",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD).",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Number of stocks (default 5, max 10).",
+                    "name": "nStock",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get top stock price movers (gainers and losers).",
+            "id": "TOP_MOVERS",
+            "name": "TOP_MOVERS",
+            "parameters": [
+                {
+                    "description": "\"top_gainers\", \"top_losers\", or both.",
+                    "name": "classifications",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"1d\", \"7d\", \"14d\", \"30d\", \"365d\".",
+                    "name": "periods",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Number of stocks (default 5, max 10).",
+                    "name": "nStock",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get stock price performance since IPO listing.",
+            "id": "IPO_PERFORMANCE",
+            "name": "IPO_PERFORMANCE",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"GOTO\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get available KLSE sectors.",
+            "id": "KLSE_SECTORS",
+            "name": "KLSE_SECTORS",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get KLSE companies in a sector.",
+            "id": "KLSE_COMPANIES",
+            "name": "KLSE_COMPANIES",
+            "parameters": [
+                {
+                    "description": "KLSE sector slug (e.g. \"financials\").",
+                    "name": "sector",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get top KLSE companies by a classification metric.",
+            "id": "KLSE_TOP_COMPANIES",
+            "name": "KLSE_TOP_COMPANIES",
+            "parameters": [
+                {
+                    "description": "\"dividend_yield\",\"revenue\",\"earnings\",\"market_cap\",\"pe\".",
+                    "name": "classifications",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "KLSE sector slug.",
+                    "name": "sector",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get KLSE company overview: market cap, sector, price changes.",
+            "id": "KLSE_OVERVIEW",
+            "name": "KLSE_OVERVIEW",
+            "parameters": [
+                {
+                    "description": "KLSE ticker (e.g. \"1155\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get KLSE company valuation ratios.",
+            "id": "KLSE_VALUATION",
+            "name": "KLSE_VALUATION",
+            "parameters": [
+                {
+                    "description": "KLSE ticker (e.g. \"1155\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get KLSE company financial data: earnings, revenue, ratios.",
+            "id": "KLSE_FINANCIALS",
+            "name": "KLSE_FINANCIALS",
+            "parameters": [
+                {
+                    "description": "KLSE ticker (e.g. \"1155\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get KLSE company dividend data.",
+            "id": "KLSE_DIVIDEND",
+            "name": "KLSE_DIVIDEND",
+            "parameters": [
+                {
+                    "description": "KLSE ticker (e.g. \"1155\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get available SGX sectors.",
+            "id": "SGX_SECTORS",
+            "name": "SGX_SECTORS",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get SGX companies in a sector.",
+            "id": "SGX_COMPANIES",
+            "name": "SGX_COMPANIES",
+            "parameters": [
+                {
+                    "description": "SGX sector slug (e.g. \"financial-services\").",
+                    "name": "sector",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get top SGX companies by a classification metric.",
+            "id": "SGX_TOP_COMPANIES",
+            "name": "SGX_TOP_COMPANIES",
+            "parameters": [
+                {
+                    "description": "\"dividend_yield\",\"revenue\",\"earnings\",\"market_cap\",\"pe\".",
+                    "name": "classifications",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "SGX sector slug.",
+                    "name": "sector",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get SGX company overview: market cap, sector, multi-period price changes.",
+            "id": "SGX_OVERVIEW",
+            "name": "SGX_OVERVIEW",
+            "parameters": [
+                {
+                    "description": "SGX ticker (e.g. \"D05\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get SGX company valuation ratios.",
+            "id": "SGX_VALUATION",
+            "name": "SGX_VALUATION",
+            "parameters": [
+                {
+                    "description": "SGX ticker (e.g. \"D05\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get SGX company financial data with income stmt and balance sheet.",
+            "id": "SGX_FINANCIALS",
+            "name": "SGX_FINANCIALS",
+            "parameters": [
+                {
+                    "description": "SGX ticker (e.g. \"D05\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get SGX company dividend data with full history.",
+            "id": "SGX_DIVIDEND",
+            "name": "SGX_DIVIDEND",
+            "parameters": [
+                {
+                    "description": "SGX ticker (e.g. \"D05\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        }
+    ]
+}
