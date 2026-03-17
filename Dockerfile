@@ -7,7 +7,7 @@ RUN npm ci --no-audit --no-fund
 
 COPY . .
 
-ARG ADDIN_BASE_URL=https://sectors-financial-addin.fly.dev
+ARG ADDIN_BASE_URL=https://sectors-excel-addin.fly.dev
 ENV ADDIN_BASE_URL=${ADDIN_BASE_URL}
 RUN npm run build
 
