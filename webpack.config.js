@@ -6,7 +6,9 @@ const CustomFunctionsMetadataPlugin = require("custom-functions-metadata-plugin"
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const urlDev = "https://localhost:3000/";
-const urlProd = "https://sectors.app/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
+const localhostOrigin = "https://localhost:3000";
+const prodBaseUrl = (process.env.ADDIN_BASE_URL || "https://sectors.app").trim();
+const urlProd = prodBaseUrl.endsWith("/") ? prodBaseUrl : `${prodBaseUrl}/`;
 
 /* global require, module, process */
 
@@ -77,7 +79,10 @@ module.exports = async (env, options) => {
               if (dev) {
                 return content;
               } else {
-                return content.toString().replace(urlDev, urlProd);
+                return content
+                  .toString()
+                  .replaceAll(urlDev, urlProd)
+                  .replaceAll(localhostOrigin, prodBaseUrl);
               }
             },
           },
