@@ -858,3 +858,40 @@ async function SGX_DIVIDEND(ticker) {
     return [["Error", error.message]];
   }
 }
+
+/* ────────── FUNCTION REGISTRATION ────────── */
+CustomFunctions.associate("SET_API_KEY", SET_API_KEY);
+CustomFunctions.associate("SCREEN", SCREEN);
+CustomFunctions.associate("SCREEN_NL", SCREEN_NL);
+CustomFunctions.associate("FREE_FLOAT", FREE_FLOAT);
+CustomFunctions.associate("COMPANY_OVERVIEW", COMPANY_OVERVIEW);
+CustomFunctions.associate("COMPANY_VALUATION", COMPANY_VALUATION);
+CustomFunctions.associate("COMPANY_FINANCIALS", COMPANY_FINANCIALS);
+CustomFunctions.associate("COMPANY_DIVIDEND", COMPANY_DIVIDEND);
+CustomFunctions.associate("COMPANY_OWNERSHIP", COMPANY_OWNERSHIP);
+CustomFunctions.associate("SUBSECTOR_STATISTICS", SUBSECTOR_STATISTICS);
+CustomFunctions.associate("SUBSECTOR_MARKET_CAP", SUBSECTOR_MARKET_CAP);
+CustomFunctions.associate("SUBSECTOR_VALUATION", SUBSECTOR_VALUATION);
+CustomFunctions.associate("SUBSECTOR_GROWTH", SUBSECTOR_GROWTH);
+CustomFunctions.associate("QUARTERLY_FINANCIALS", QUARTERLY_FINANCIALS);
+CustomFunctions.associate("COMPANY_SEGMENTS", COMPANY_SEGMENTS);
+CustomFunctions.associate("DAILY_PRICE", DAILY_PRICE);
+CustomFunctions.associate("IDX_MARKET_CAP", IDX_MARKET_CAP);
+CustomFunctions.associate("INDEX_DAILY", INDEX_DAILY);
+CustomFunctions.associate("MOST_TRADED", MOST_TRADED);
+CustomFunctions.associate("TOP_MOVERS", TOP_MOVERS);
+CustomFunctions.associate("IPO_PERFORMANCE", IPO_PERFORMANCE);
+CustomFunctions.associate("KLSE_SECTORS", KLSE_SECTORS);
+CustomFunctions.associate("KLSE_COMPANIES", KLSE_COMPANIES);
+CustomFunctions.associate("KLSE_TOP_COMPANIES", KLSE_TOP_COMPANIES);
+CustomFunctions.associate("KLSE_OVERVIEW", KLSE_OVERVIEW);
+CustomFunctions.associate("KLSE_VALUATION", KLSE_VALUATION);
+CustomFunctions.associate("KLSE_FINANCIALS", KLSE_FINANCIALS);
+CustomFunctions.associate("KLSE_DIVIDEND", KLSE_DIVIDEND);
+CustomFunctions.associate("SGX_SECTORS", SGX_SECTORS);
+CustomFunctions.associate("SGX_COMPANIES", SGX_COMPANIES);
+CustomFunctions.associate("SGX_TOP_COMPANIES", SGX_TOP_COMPANIES);
+CustomFunctions.associate("SGX_OVERVIEW", SGX_OVERVIEW);
+CustomFunctions.associate("SGX_VALUATION", SGX_VALUATION);
+CustomFunctions.associate("SGX_FINANCIALS", SGX_FINANCIALS);
+CustomFunctions.associate("SGX_DIVIDEND", SGX_DIVIDEND);
