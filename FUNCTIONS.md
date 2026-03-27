@@ -29,13 +29,13 @@ Example:
 
 | # | Excel Function | Purpose |
 |---|---|---|
-| 1 | `SECTORS.SET_API_KEY` | Save API key in workbook settings |
+| 1 | Task Pane (Sectors API) | Save API key in workbook settings |
 
-Example:
+How to use:
 
-```excel
-=SECTORS.SET_API_KEY("your-api-key")
-```
+1. Open the Sectors task pane.
+2. Enter API key.
+3. Click Save Key.
 
 ---
 

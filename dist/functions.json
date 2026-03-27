@@ -2,21 +2,6 @@
     "allowCustomDataForDataTypeAny": true,
     "functions": [
         {
-            "description": "Save your Sectors API key for this workbook.",
-            "id": "SET_API_KEY",
-            "name": "SET_API_KEY",
-            "parameters": [
-                {
-                    "description": "Your Sectors API key.",
-                    "name": "apiKey",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "type": "string"
-            }
-        },
-        {
             "description": "Screen IDX companies using SQL-like filters.",
             "id": "SCREEN",
             "name": "SCREEN",

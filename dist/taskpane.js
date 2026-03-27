@@ -1,3 +1,230 @@
-/*! For license information please see taskpane.js.LICENSE.txt */
-!function(){"use strict";var t={98362:function(t,e,n){t.exports=n.p+"assets/logo-filled.png"},58394:function(t,e,n){t.exports=n.p+"1fda685b81e1123773f6.css"}},e={};function n(r){var o=e[r];if(void 0!==o)return o.exports;var c=e[r]={exports:{}};return t[r](c,c.exports,n),c.exports}n.m=t,n.d=function(t,e){for(var r in e)n.o(e,r)&&!n.o(t,r)&&Object.defineProperty(t,r,{enumerable:!0,get:e[r]})},n.g=function(){if("object"==typeof globalThis)return globalThis;try{return this||new Function("return this")()}catch(t){if("object"==typeof window)return window}}(),n.o=function(t,e){return Object.prototype.hasOwnProperty.call(t,e)},function(){var t;n.g.importScripts&&(t=n.g.location+"");var e=n.g.document;if(!t&&e&&(e.currentScript&&"SCRIPT"===e.currentScript.tagName.toUpperCase()&&(t=e.currentScript.src),!t)){var r=e.getElementsByTagName("script");if(r.length)for(var o=r.length-1;o>-1&&(!t||!/^http(s?):/.test(t));)t=r[o--].src}if(!t)throw new Error("Automatic publicPath is not supported in this browser");t=t.replace(/^blob:/,"").replace(/#.*$/,"").replace(/\?.*$/,"").replace(/\/[^\/]+$/,"/"),n.p=t}(),n.b="undefined"!=typeof document&&document.baseURI||self.location.href,function(){function t(){var n,r,o="function"==typeof Symbol?Symbol:{},c=o.iterator||"@@iterator",i=o.toStringTag||"@@toStringTag";function u(t,o,c,i){var u=o&&o.prototype instanceof f?o:f,s=Object.create(u.prototype);return e(s,"_invoke",function(t,e,o){var c,i,u,f=0,s=o||[],l=!1,p={p:0,n:0,v:n,a:d,f:d.bind(n,4),d:function(t,e){return c=t,i=0,u=n,p.n=e,a}};function d(t,e){for(i=t,u=e,r=0;!l&&f&&!o&&r<s.length;r++){var o,c=s[r],d=p.p,y=c[2];t>3?(o=y===e)&&(u=c[(i=c[4])?5:(i=3,3)],c[4]=c[5]=n):c[0]<=d&&((o=t<2&&d<c[1])?(i=0,p.v=e,p.n=c[1]):d<y&&(o=t<3||c[0]>e||e>y)&&(c[4]=t,c[5]=e,p.n=y,i=0))}if(o||t>1)return a;throw l=!0,e}return function(o,s,y){if(f>1)throw TypeError("Generator is already running");for(l&&1===s&&d(s,y),i=s,u=y;(r=i<2?n:u)||!l;){c||(i?i<3?(i>1&&(p.n=-1),d(i,u)):p.n=u:p.v=u);try{if(f=2,c){if(i||(o="next"),r=c[o]){if(!(r=r.call(c,u)))throw TypeError("iterator result is not an object");if(!r.done)return r;u=r.value,i<2&&(i=0)}else 1===i&&(r=c.return)&&r.call(c),i<2&&(u=TypeError("The iterator does not provide a '"+o+"' method"),i=1);c=n}else if((r=(l=p.n<0)?u:t.call(e,p))!==a)break}catch(t){c=n,i=1,u=t}finally{f=1}}return{value:r,done:l}}}(t,c,i),!0),s}var a={};function f(){}function s(){}function l(){}r=Object.getPrototypeOf;var p=[][c]?r(r([][c]())):(e(r={},c,function(){return this}),r),d=l.prototype=f.prototype=Object.create(p);function y(t){return Object.setPrototypeOf?Object.setPrototypeOf(t,l):(t.__proto__=l,e(t,i,"GeneratorFunction")),t.prototype=Object.create(d),t}return s.prototype=l,e(d,"constructor",l),e(l,"constructor",s),s.displayName="GeneratorFunction",e(l,i,"GeneratorFunction"),e(d),e(d,i,"Generator"),e(d,c,function(){return this}),e(d,"toString",function(){return"[object Generator]"}),(t=function(){return{w:u,m:y}})()}function e(t,n,r,o){var c=Object.defineProperty;try{c({},"",{})}catch(t){c=0}e=function(t,n,r,o){function i(n,r){e(t,n,function(t){return this._invoke(n,r,t)})}n?c?c(t,n,{value:r,enumerable:!o,configurable:!o,writable:!o}):t[n]=r:(i("next",0),i("throw",1),i("return",2))},e(t,n,r,o)}function n(t,e,n,r,o,c,i){try{var u=t[c](i),a=u.value}catch(t){return void n(t)}u.done?e(a):Promise.resolve(a).then(r,o)}function r(t){return function(){var e=this,r=arguments;return new Promise(function(o,c){var i=t.apply(e,r);function u(t){n(i,o,c,u,a,"next",t)}function a(t){n(i,o,c,u,a,"throw",t)}u(void 0)})}}function o(){return c.apply(this,arguments)}function c(){return c=r(t().m(function e(){var n;return t().w(function(e){for(;;)switch(e.p=e.n){case 0:return e.p=0,e.n=1,Excel.run(function(){var e=r(t().m(function e(n){var r;return t().w(function(t){for(;;)switch(t.n){case 0:return(r=n.workbook.getSelectedRange()).load("address"),r.format.fill.color="yellow",t.n=1,n.sync();case 1:console.log("The range address was ".concat(r.address,"."));case 2:return t.a(2)}},e)}));return function(t){return e.apply(this,arguments)}}());case 1:e.n=3;break;case 2:e.p=2,n=e.v,console.error(n);case 3:return e.a(2)}},e,null,[[0,2]])})),c.apply(this,arguments)}Office.onReady(function(){document.getElementById("sideload-msg").style.display="none",document.getElementById("app-body").style.display="flex",document.getElementById("run").onclick=o})}(),new URL(n(58394),n.b),new URL(n(98362),n.b)}();
+/******/ (function() { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./assets/logo-filled.png":
+/*!********************************!*\
+  !*** ./assets/logo-filled.png ***!
+  \********************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+module.exports = __webpack_require__.p + "assets/logo-filled.png";
+
+/***/ }),
+
+/***/ "./src/taskpane/taskpane.css":
+/*!***********************************!*\
+  !*** ./src/taskpane/taskpane.css ***!
+  \***********************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+module.exports = __webpack_require__.p + "2e020911c607dbb9d45f.css";
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		if (!(moduleId in __webpack_modules__)) {
+/******/ 			delete __webpack_module_cache__[moduleId];
+/******/ 			var e = new Error("Cannot find module '" + moduleId + "'");
+/******/ 			e.code = 'MODULE_NOT_FOUND';
+/******/ 			throw e;
+/******/ 		}
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/global */
+/******/ 	!function() {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	!function() {
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/publicPath */
+/******/ 	!function() {
+/******/ 		var scriptUrl;
+/******/ 		if (__webpack_require__.g.importScripts) scriptUrl = __webpack_require__.g.location + "";
+/******/ 		var document = __webpack_require__.g.document;
+/******/ 		if (!scriptUrl && document) {
+/******/ 			if (document.currentScript && document.currentScript.tagName.toUpperCase() === 'SCRIPT')
+/******/ 				scriptUrl = document.currentScript.src;
+/******/ 			if (!scriptUrl) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				if(scripts.length) {
+/******/ 					var i = scripts.length - 1;
+/******/ 					while (i > -1 && (!scriptUrl || !/^http(s?):/.test(scriptUrl))) scriptUrl = scripts[i--].src;
+/******/ 				}
+/******/ 			}
+/******/ 		}
+/******/ 		// When supporting browsers where an automatic publicPath is not supported you must specify an output.publicPath manually via configuration
+/******/ 		// or pass an empty string ("") and set the __webpack_public_path__ variable from your code to use your own logic.
+/******/ 		if (!scriptUrl) throw new Error("Automatic publicPath is not supported in this browser");
+/******/ 		scriptUrl = scriptUrl.replace(/^blob:/, "").replace(/#.*$/, "").replace(/\?.*$/, "").replace(/\/[^\/]+$/, "/");
+/******/ 		__webpack_require__.p = scriptUrl;
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	!function() {
+/******/ 		__webpack_require__.b = (typeof document !== 'undefined' && document.baseURI) || self.location.href;
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			"taskpane": 0
+/******/ 		};
+/******/ 		
+/******/ 		// no chunk on demand loading
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		// no on chunks loaded
+/******/ 		
+/******/ 		// no jsonp function
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be isolated against other entry modules.
+!function() {
+/*!**********************************!*\
+  !*** ./src/taskpane/taskpane.js ***!
+  \**********************************/
+/*
+ * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ * See LICENSE in the project root for license information.
+ */
+
+/* global document, Office */
+
+var API_KEY_SETTING = "SECTORS_API_KEY";
+
+// The initialize function must be run each time a new page is loaded
+Office.onReady(function () {
+  document.getElementById("sideload-msg").style.display = "none";
+  document.getElementById("app-body").style.display = "flex";
+  document.getElementById("save-api-key").onclick = saveApiKey;
+  document.getElementById("clear-api-key").onclick = clearApiKey;
+  renderCurrentKey();
+});
+function saveApiKey() {
+  var input = document.getElementById("api-key-input");
+  var apiKey = (input.value || "").trim();
+  if (!apiKey) {
+    setStatus("Please enter an API key.", true);
+    return;
+  }
+  Office.context.document.settings.set(API_KEY_SETTING, apiKey);
+  Office.context.document.settings.saveAsync(function (result) {
+    if (result.status === Office.AsyncResultStatus.Succeeded) {
+      input.value = "";
+      renderCurrentKey();
+      setStatus("API key saved for this workbook.", false);
+      return;
+    }
+    var errMsg = result.error && result.error.message ? result.error.message : "Unknown error";
+    setStatus("Failed to save key: ".concat(errMsg), true);
+  });
+}
+function clearApiKey() {
+  Office.context.document.settings.set(API_KEY_SETTING, "");
+  Office.context.document.settings.saveAsync(function (result) {
+    if (result.status === Office.AsyncResultStatus.Succeeded) {
+      renderCurrentKey();
+      setStatus("API key cleared.", false);
+      return;
+    }
+    var errMsg = result.error && result.error.message ? result.error.message : "Unknown error";
+    setStatus("Failed to clear key: ".concat(errMsg), true);
+  });
+}
+function renderCurrentKey() {
+  var currentKey = Office.context.document.settings.get(API_KEY_SETTING) || "";
+  document.getElementById("current-key-value").textContent = maskApiKey(currentKey);
+}
+function maskApiKey(key) {
+  if (!key) {
+    return "Not set";
+  }
+  if (key.length <= 6) {
+    return "*".repeat(key.length);
+  }
+  return "".concat(key.slice(0, 3), "...").concat(key.slice(-3));
+}
+function setStatus(message, isError) {
+  var status = document.getElementById("api-key-status");
+  status.textContent = message;
+  status.className = isError ? "ms-font-s status-message error" : "ms-font-s status-message success";
+}
+}();
+// This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
+!function() {
+"use strict";
+/*!************************************!*\
+  !*** ./src/taskpane/taskpane.html ***!
+  \************************************/
+__webpack_require__.r(__webpack_exports__);
+// Imports
+var ___HTML_LOADER_IMPORT_0___ = new URL(/* asset import */ __webpack_require__(/*! ./taskpane.css */ "./src/taskpane/taskpane.css"), __webpack_require__.b);
+var ___HTML_LOADER_IMPORT_1___ = new URL(/* asset import */ __webpack_require__(/*! ../../assets/logo-filled.png */ "./assets/logo-filled.png"), __webpack_require__.b);
+// Module
+var code = "<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. -->\n<!-- This file shows how to design a first-run page that provides a welcome screen to the user about the features of the add-in. -->\n\n<!DOCTYPE html>\n<html>\n\n<head>\n    <meta charset=\"UTF-8\" />\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <title>Sectors Task Pane Add-in</title>\n\n    <!-- Office JavaScript API -->\n    <" + "script type=\"text/javascript\" src=\"https://appsforoffice.microsoft.com/lib/1/hosted/office.js\"><" + "/script>\n\n    <!-- For more information on Fluent UI, visit https://developer.microsoft.com/fluentui#/. -->\n    <link rel=\"stylesheet\" href=\"https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.002/office-ui-fabric-core/11.1.0/css/fabric.min.css\"/>\n\n    <!-- Template styles -->\n    <link href=\"" + ___HTML_LOADER_IMPORT_0___ + "\" rel=\"stylesheet\" type=\"text/css\" />\n</head>\n\n<body class=\"ms-font-m ms-welcome ms-Fabric\">\n    <header class=\"ms-welcome__header ms-bgColor-neutralLighter\">\n        <img width=\"90\" height=\"90\" src=\"" + ___HTML_LOADER_IMPORT_1___ + "\" alt=\"Sectors\" title=\"Sectors\" />\n        <h1 class=\"ms-font-su\">Sectors API</h1>\n    </header>\n    <section id=\"sideload-msg\" class=\"ms-welcome__main\">\n        <h2 class=\"ms-font-xl\">Please <a target=\"_blank\" href=\"https://learn.microsoft.com/office/dev/add-ins/testing/test-debug-office-add-ins#sideload-an-office-add-in-for-testing\">sideload</a> your add-in to see app body.</h2>\n    </section>\n    <main id=\"app-body\" class=\"ms-welcome__main\" style=\"display: none;\">\n        <h2 class=\"ms-font-xl\">Store your API key securely for this workbook</h2>\n        <p class=\"ms-font-m app-description\">The key is saved in workbook settings, so it does not appear in worksheet formulas.</p>\n\n        <div class=\"key-card\">\n            <label class=\"ms-font-m\" for=\"api-key-input\">Sectors API Key</label>\n            <input id=\"api-key-input\" class=\"api-key-input\" type=\"password\" placeholder=\"Paste your API key\" autocomplete=\"off\" />\n            <div class=\"actions-row\">\n                <button id=\"save-api-key\" class=\"ms-Button ms-Button--primary\" type=\"button\">\n                    <span class=\"ms-Button-label\">Save Key</span>\n                </button>\n                <button id=\"clear-api-key\" class=\"ms-Button\" type=\"button\">\n                    <span class=\"ms-Button-label\">Clear</span>\n                </button>\n            </div>\n            <p class=\"ms-font-s current-key\">Current key: <span id=\"current-key-value\">Not set</span></p>\n            <p id=\"api-key-status\" class=\"ms-font-s status-message\" aria-live=\"polite\"></p>\n        </div>\n    </main>\n</body>\n\n</html>\n";
+// Exports
+/* harmony default export */ __webpack_exports__["default"] = (code);
+}();
+/******/ })()
+;
 //# sourceMappingURL=taskpane.js.map

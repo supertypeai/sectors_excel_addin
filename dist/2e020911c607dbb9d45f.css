@@ -18,8 +18,8 @@
  
  .ms-welcome__header {
     padding: 20px;
-    padding-bottom: 30px;
-    padding-top: 100px;
+    padding-bottom: 24px;
+    padding-top: 36px;
     display: -webkit-flex;
     display: flex;
     -webkit-flex-direction: column;
@@ -38,12 +38,12 @@
     align-items: center;
     -webkit-flex: 1 0 0;
     flex: 1 0 0;
-    padding: 10px 20px;
+    padding: 12px 20px 24px;
  }
  
  .ms-welcome__main > h2 {
      width: 100%;
-     text-align: center;
+     text-align: left;
  }
  
  .ms-welcome__features {
@@ -64,6 +64,54 @@
  .ms-welcome__action.ms-Button--hero {
      margin-top: 30px;
  }
+
+.app-description {
+    margin-top: 0;
+    margin-bottom: 14px;
+}
+
+.key-card {
+    width: 100%;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 14px;
+    box-sizing: border-box;
+}
+
+.api-key-input {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 8px;
+    padding: 8px 10px;
+    border: 1px solid #bfbfbf;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.actions-row {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+}
+
+.current-key {
+    margin-top: 12px;
+    margin-bottom: 4px;
+}
+
+.status-message {
+    min-height: 16px;
+    margin: 0;
+}
+
+.status-message.success {
+    color: #107c10;
+}
+
+.status-message.error {
+    color: #a4262c;
+}
  
 .ms-Button.ms-Button--hero .ms-Button-label {
   color: #0078d7;

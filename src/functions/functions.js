@@ -5,23 +5,11 @@ function getApiKey() {
   return Office.context.document.settings.get("SECTORS_API_KEY") || "";
 }
 
-/**
- * Save your Sectors API key for this workbook.
- * @customfunction
- * @param {string} apiKey Your Sectors API key.
- * @returns {string} Confirmation message.
- */
-function SET_API_KEY(apiKey) {
-  Office.context.document.settings.set("SECTORS_API_KEY", apiKey);
-  Office.context.document.settings.saveAsync();
-  return "✓ API Key saved for this session.";
-}
-
 /* ────────── FETCH UTILITY ────────── */
 async function apiFetch(endpoint, params = {}) {
   const apiKey = getApiKey();
   if (!apiKey) {
-    throw new Error("No API key. Use =SECTORS.SET_API_KEY(\"your-key\") first.");
+    throw new Error("No API key. Open the Sectors task pane and save your API key first.");
   }
 
   const url = new URL(BASE_URL + endpoint);
@@ -860,7 +848,6 @@ async function SGX_DIVIDEND(ticker) {
 }
 
 /* ────────── FUNCTION REGISTRATION ────────── */
-CustomFunctions.associate("SET_API_KEY", SET_API_KEY);
 CustomFunctions.associate("SCREEN", SCREEN);
 CustomFunctions.associate("SCREEN_NL", SCREEN_NL);
 CustomFunctions.associate("FREE_FLOAT", FREE_FLOAT);
