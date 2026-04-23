@@ -1,6 +1,6 @@
 # Sectors Financial — Excel Add-in Function Implementation Guide
 
-This guide documents the custom functions currently implemented in [Sectors Financial/src/functions/functions.js](Sectors%20Financial/src/functions/functions.js), using Sectors API v2 endpoints.
+This guide documents the custom functions currently implemented in Sectors Excel Add In functions, using Sectors API v2 endpoints.
 
 ## Part 1: Custom Function Catalog
 
@@ -18,10 +18,25 @@ Example:
 - Focuses on analyst workflows: screening, valuation, financial modeling, and market monitoring
 - Handles API failures gracefully by returning `[["Error", "..."]]`
 
+### Runtime Behavior and Error Cases
+
+- API key is required. If missing, functions return `[["Error", "No API key. Open the Sectors task pane and save your API key first."]]`.
+- API rate limit (`HTTP 429`) is surfaced as `[["Error", "Rate limit exceeded. Please wait."]]`.
+- All functions return 2D string arrays after sanitization (rows are normalized for Excel spill compatibility).
+
 ### API Base URL Used in Current Code
 
-- Current implementation uses a CORS proxy:
-  - `https://corsproxy.io/?https://api.sectors.app/v2`
+- Current implementation uses the direct API base URL:
+  - `https://api.sectors.app/v2`
+
+### Parameter Conventions
+
+- Dates: `YYYY-MM-DD`
+- Omitted optional parameter: leave blank in Excel, for example `=SECTORS.QUARTERLY_FINANCIALS("BBCA",, "2024-12-31")`
+- `ticker` values are market-specific:
+  - IDX examples: `BBCA`, `GOTO`
+  - KLSE examples: `1155`
+  - SGX examples: `D05`
 
 ---
 
@@ -208,8 +223,88 @@ Examples:
 
 ---
 
-Total implemented in current file: 35 functions
+## Part 2: Detailed Implementation Reference (Parameters + Output Schema)
 
-- 1 API key function
-- 34 market/analytics functions
+### A. Companies Screener (IDX)
 
+| Function | Signature | Defaults / Allowed Values | Output Schema |
+|---|---|---|---|
+| `SECTORS.SCREEN` | `SCREEN(where, [orderBy], [limit])` | `limit`: API default 50, max 200. `orderBy`: supports `-` prefix for descending. | Header row: `Symbol`, `Company Name` |
+| `SECTORS.SCREEN_NL` | `SCREEN_NL(query)` | Natural-language `query` sent as `q`. | Header row: `Symbol`, `Company Name` |
+| `SECTORS.FREE_FLOAT` | `FREE_FLOAT([subSector])` | `subSector` optional (`sub_sector`). | Header row: `Symbol`, `Company Name`, `Free Float %` |
+
+### B. Company Report by Section (IDX)
+
+| Function | Signature | Defaults / Allowed Values | Output Schema |
+|---|---|---|---|
+| `SECTORS.COMPANY_OVERVIEW` | `COMPANY_OVERVIEW(ticker)` | `ticker` required. | Key-value rows: `Company Name`, `Sector`, `Sub Sector`, `Industry`, `Market Cap`, `Market Cap Rank`, `Last Close Price`, `Daily Change`, `Listing Date`, `Employee Count`, `ESG Score`, `Website` |
+| `SECTORS.COMPANY_VALUATION` | `COMPANY_VALUATION(ticker)` | `ticker` required. | Key metrics rows, then table header: `Year`, `PE`, `PB`, `PS`, `PCF`, `PEG`, `EV/EBITDA`, `EV/Revenue` |
+| `SECTORS.COMPANY_FINANCIALS` | `COMPANY_FINANCIALS(ticker)` | `ticker` required. | Key metrics rows, then table header: `Year`, `Revenue`, `Earnings`, `EBITDA`, `EBIT`, `Total Assets`, `Total Equity`, `Total Debt`, `Free Cash Flow`, `Operating Cash Flow` |
+| `SECTORS.COMPANY_DIVIDEND` | `COMPANY_DIVIDEND(ticker)` | `ticker` required. | Key metrics rows, then table header: `Year`, `Total Dividend`, `Total Yield` |
+| `SECTORS.COMPANY_OWNERSHIP` | `COMPANY_OWNERSHIP(ticker)` | `ticker` required. | Header row: `Shareholder`, `Share %`, `Share Amount`, `Share Value` |
+
+### C. Subsector Report by Section (IDX)
+
+| Function | Signature | Defaults / Allowed Values | Output Schema |
+|---|---|---|---|
+| `SECTORS.SUBSECTOR_STATISTICS` | `SUBSECTOR_STATISTICS(subSector)` | `subSector` required (slug, example `banks`). | Key-value rows: `Total Companies`, `Filtered Median PE`, `Filtered Weighted Avg PE`, `Min Company PE`, `Max Company PE` |
+| `SECTORS.SUBSECTOR_MARKET_CAP` | `SUBSECTOR_MARKET_CAP(subSector)` | `subSector` required. | Key-value rows: `Total Market Cap`, `Avg Market Cap`, `1W Change`, `1Y Change`, `YTD Change` |
+| `SECTORS.SUBSECTOR_VALUATION` | `SUBSECTOR_VALUATION(subSector)` | `subSector` required. | Header row: `Year`, `PE`, `PB`, `PS`, `PCF` |
+| `SECTORS.SUBSECTOR_GROWTH` | `SUBSECTOR_GROWTH(subSector)` | `subSector` required. | Header row: `Year`, `Avg Earnings Growth`, `Avg Revenue Growth` |
+
+### D. Quarterly Financials and Segments
+
+| Function | Signature | Defaults / Allowed Values | Output Schema |
+|---|---|---|---|
+| `SECTORS.QUARTERLY_FINANCIALS` | `QUARTERLY_FINANCIALS(ticker, [nQuarters], [reportDate])` | `nQuarters` optional. `reportDate` optional (`YYYY-MM-DD`). | Header row: `Date`, `Revenue`, `Earnings`, `Total Assets`, `Total Equity`, `Total Liabilities`, `Operating Cash Flow` |
+| `SECTORS.COMPANY_SEGMENTS` | `COMPANY_SEGMENTS(ticker, [financialYear])` | `financialYear` optional (latest if omitted). | Header row: `Source`, `Target`, `Value (IDR)` |
+
+### E. Price and Market Data
+
+| Function | Signature | Defaults / Allowed Values | Output Schema |
+|---|---|---|---|
+| `SECTORS.DAILY_PRICE` | `DAILY_PRICE(ticker, [start], [end])` | `start`, `end` optional (`YYYY-MM-DD`). | Header row: `Date`, `Close`, `Volume`, `Market Cap` |
+| `SECTORS.IDX_MARKET_CAP` | `IDX_MARKET_CAP([start], [end])` | `start`, `end` optional (`YYYY-MM-DD`). | Header row: `Date`, `IDX Total Market Cap` |
+| `SECTORS.INDEX_DAILY` | `INDEX_DAILY(indexCode, [start], [end])` | `indexCode` required (examples: `ihsg`, `lq45`, `idx30`). | Header row: `Date`, `Index`, `Price` |
+
+### F. Rankings and IPO
+
+| Function | Signature | Defaults / Allowed Values | Output Schema |
+|---|---|---|---|
+| `SECTORS.MOST_TRADED` | `MOST_TRADED([start], [end], [nStock])` | `nStock`: API default 5, max 10. | Header row: `Date`, `Symbol`, `Company`, `Volume`, `Price` |
+| `SECTORS.TOP_MOVERS` | `TOP_MOVERS([classifications], [periods], [nStock])` | `classifications`: `top_gainers`, `top_losers`, or both. `periods`: `1d`, `7d`, `14d`, `30d`, `365d`. `nStock`: API default 5, max 10. | Header row: `Type`, `Period`, `Symbol`, `Name`, `Price Change`, `Last Price` |
+| `SECTORS.IPO_PERFORMANCE` | `IPO_PERFORMANCE(ticker)` | `ticker` required. | Header row: `Period`, `Change` with rows `7 Days`, `30 Days`, `90 Days`, `365 Days` |
+
+### G. Malaysia (KLSE)
+
+| Function | Signature | Defaults / Allowed Values | Output Schema |
+|---|---|---|---|
+| `SECTORS.KLSE_SECTORS` | `KLSE_SECTORS()` | No parameters. | Header row: `Sector` |
+| `SECTORS.KLSE_COMPANIES` | `KLSE_COMPANIES(sector)` | `sector` required (slug). | Header row: `Symbol`, `Company Name` |
+| `SECTORS.KLSE_TOP_COMPANIES` | `KLSE_TOP_COMPANIES([classifications], [sector])` | `classifications` options: `dividend_yield`, `revenue`, `earnings`, `market_cap`, `pe`. `sector` optional. | Header row: `Classification`, `Symbol`, `Company`, `Value` |
+| `SECTORS.KLSE_OVERVIEW` | `KLSE_OVERVIEW(ticker)` | `ticker` required. | Key-value rows: `Name`, `Market Cap`, `Sector`, `Sub Sector`, `Volume`, `1D Change`, `7D Change` |
+| `SECTORS.KLSE_VALUATION` | `KLSE_VALUATION(ticker)` | `ticker` required. | Key-value rows: `PE`, `PE TTM`, `PB`, `PS TTM`, `PCF`, `PCF TTM` |
+| `SECTORS.KLSE_FINANCIALS` | `KLSE_FINANCIALS(ticker)` | `ticker` required. | Key metrics rows, then table header: `Period`, `Revenue`, `Earnings` |
+| `SECTORS.KLSE_DIVIDEND` | `KLSE_DIVIDEND(ticker)` | `ticker` required. | Key-value rows: `5Y Avg Yield`, `Growth Rate`, `Payout Ratio`, `Forward Dividend`, `Forward Div Yield`, `Dividend TTM` |
+
+### H. Singapore (SGX)
+
+| Function | Signature | Defaults / Allowed Values | Output Schema |
+|---|---|---|---|
+| `SECTORS.SGX_SECTORS` | `SGX_SECTORS()` | No parameters. | Header row: `Sector` |
+| `SECTORS.SGX_COMPANIES` | `SGX_COMPANIES(sector)` | `sector` required (slug). | Header row: `Symbol`, `Company Name` |
+| `SECTORS.SGX_TOP_COMPANIES` | `SGX_TOP_COMPANIES([classifications], [sector])` | `classifications` options: `dividend_yield`, `revenue`, `earnings`, `market_cap`, `pe`. `sector` optional. | Header row: `Classification`, `Symbol`, `Company`, `Value` |
+| `SECTORS.SGX_OVERVIEW` | `SGX_OVERVIEW(ticker)` | `ticker` required. | Key-value rows: `Name`, `Market Cap`, `Sector`, `Sub Sector`, `Volume`, `1D Change`, `7D Change`, `1M Change`, `1Y Change`, `YTD Change` |
+| `SECTORS.SGX_VALUATION` | `SGX_VALUATION(ticker)` | `ticker` required. | Key-value rows: `PE`, `PB`, `PS`, `PCF` |
+| `SECTORS.SGX_FINANCIALS` | `SGX_FINANCIALS(ticker)` | `ticker` required. | Key metrics rows, then table header: `Year`, `Revenue`, `Earnings` |
+| `SECTORS.SGX_DIVIDEND` | `SGX_DIVIDEND(ticker)` | `ticker` required. | Key metrics rows, then table header: `Year`, `Total Dividend`, `Total Yield` |
+
+---
+
+## Part 3: Quick Usage Notes for Analysts
+
+- If a function spills only one `Error` row, validate API key first in task pane.
+- For rolling datasets (`DAILY_PRICE`, `INDEX_DAILY`, `IDX_MARKET_CAP`, `MOST_TRADED`), always set explicit `start` and `end` for reproducible models.
+- For rank/screener functions, keep formulas in a fixed output area because spill size can change by date and filters.
+
+---

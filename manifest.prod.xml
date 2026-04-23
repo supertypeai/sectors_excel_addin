@@ -8,7 +8,7 @@
   <Description DefaultValue="Write your own Excel functions in JavaScript."/>
   <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-64.png"/>
-  <SupportUrl DefaultValue="https://sectors.app/support"/>
+  <SupportUrl DefaultValue="https://supertype.ai/contact"/>
   <AppDomains>
     <AppDomain>https://api.sectors.app</AppDomain>
     <AppDomain>https://localhost:3000</AppDomain>

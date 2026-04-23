@@ -32,23 +32,94 @@ async function apiFetch(endpoint, params = {}) {
 }
 
 /* ────────── OUTPUT SANITIZER ────────── */
+const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+const NUMBER_REGEX = /^-?\d+(\.\d+)?$/;
+
+function toExcelDateSerial(value) {
+  const [y, m, d] = value.split("-").map(Number);
+  const utc = Date.UTC(y, m - 1, d);
+  const excelEpochUtc = Date.UTC(1899, 11, 30);
+  return (utc - excelEpochUtc) / 86400000;
+}
+
+function coerceValueType(value, type) {
+  if (value === undefined || value === null || value === "") return value;
+
+  if (type === "number") {
+    if (typeof value === "number") return value;
+    if (typeof value === "string") {
+      const trimmed = value.trim();
+      if (NUMBER_REGEX.test(trimmed)) {
+        const parsed = Number(trimmed);
+        if (Number.isFinite(parsed)) return parsed;
+      }
+    }
+    return value;
+  }
+
+  if (type === "date") {
+    if (value instanceof Date) {
+      return (value.getTime() - Date.UTC(1899, 11, 30)) / 86400000;
+    }
+    if (typeof value === "string" && ISO_DATE_REGEX.test(value)) {
+      return toExcelDateSerial(value);
+    }
+    return value;
+  }
+
+  return value;
+}
+
+function applyColumnTypes(rows, columnTypeMap, startRow = 1) {
+  const entries = Object.entries(columnTypeMap).map(([k, t]) => [Number(k), t]);
+  for (let i = startRow; i < rows.length; i++) {
+    const row = rows[i];
+    if (!Array.isArray(row) || row.length === 0) continue;
+    for (const [columnIndex, type] of entries) {
+      if (columnIndex >= 0 && columnIndex < row.length) {
+        row[columnIndex] = coerceValueType(row[columnIndex], type);
+      }
+    }
+  }
+  return rows;
+}
+
+function applyKeyValueTypes(rows, keyTypeMap) {
+  for (const row of rows) {
+    if (!Array.isArray(row) || row.length < 2) continue;
+    const type = keyTypeMap[row[0]];
+    if (type) {
+      row[1] = coerceValueType(row[1], type);
+    }
+  }
+  return rows;
+}
+
 /**
- * Normalise a 2-D array so every cell is a string and every row has the
- * same number of columns. Removes zero-length "separator" rows.
- * Excel custom functions REQUIRE this — any undefined / null / ragged row
- * causes #VALUE!.
+ * Normalise a 2-D array so every row has the same number of columns while
+ * preserving native scalar types for Excel (number/boolean/date serial/string).
+ * Removes zero-length "separator" rows.
+ * Excel custom functions REQUIRE rectangular output — ragged rows can cause
+ * #VALUE!.
  */
 function sanitize(rows) {
+  function sanitizeCell(v) {
+    if (v === undefined || v === null) return "";
+    if (typeof v === "number" || typeof v === "boolean") return v;
+    const coercedDate = coerceValueType(v, "date");
+    if (coercedDate !== v) return coercedDate;
+    return String(v);
+  }
+
   // 1. Drop completely empty separator rows
   const filtered = rows.filter((r) => r.length > 0);
   // 2. Find the widest row
   const cols = filtered.reduce((max, r) => Math.max(max, r.length), 0);
-  // 3. Pad + stringify every cell
+  // 3. Pad + sanitize every cell
   return filtered.map((r) => {
     const row = [];
     for (let i = 0; i < cols; i++) {
-      const v = r[i];
-      row.push(v === undefined || v === null ? "" : String(v));
+      row.push(sanitizeCell(r[i]));
     }
     return row;
   });
@@ -104,10 +175,12 @@ async function FREE_FLOAT(subSector) {
     const params = {};
     if (subSector) params.sub_sector = subSector;
     const data = await apiFetch("/free-float/", params);
-    return sanitize([
+    const rows = [
       ["Symbol", "Company Name", "Free Float %"],
       ...data.map((c) => [c.symbol, c.company_name, c.free_float]),
-    ]);
+    ];
+    applyColumnTypes(rows, { 2: "number" });
+    return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
   }
@@ -124,7 +197,7 @@ async function COMPANY_OVERVIEW(ticker) {
   try {
     const d = await apiFetch(`/company/report/${ticker}/`, { sections: "overview" });
     const o = d.overview;
-    return sanitize([
+    const rows = [
       ["Company Name", d.company_name],
       ["Sector", o.sector],
       ["Sub Sector", o.sub_sector],
@@ -137,7 +210,17 @@ async function COMPANY_OVERVIEW(ticker) {
       ["Employee Count", o.employee_num],
       ["ESG Score", o.esg_score],
       ["Website", o.website],
-    ]);
+    ];
+    applyKeyValueTypes(rows, {
+      "Market Cap": "number",
+      "Market Cap Rank": "number",
+      "Last Close Price": "number",
+      "Daily Change": "number",
+      "Listing Date": "date",
+      "Employee Count": "number",
+      "ESG Score": "number",
+    });
+    return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
   }
@@ -172,6 +255,21 @@ async function COMPANY_VALUATION(ticker) {
         h.enterprise_to_revenue,
       ]);
     });
+    applyKeyValueTypes(rows, {
+      "Last Close Price": "number",
+      "Forward PE": "number",
+      "Intrinsic Value": "number",
+    });
+    applyColumnTypes(rows, {
+      0: "number",
+      1: "number",
+      2: "number",
+      3: "number",
+      4: "number",
+      5: "number",
+      6: "number",
+      7: "number",
+    }, 5);
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -220,6 +318,23 @@ async function COMPANY_FINANCIALS(ticker) {
         h.operating_cash_flow,
       ]);
     });
+    applyKeyValueTypes(rows, {
+      EPS: "number",
+      "YoY Qtr Earnings Growth": "number",
+      "YoY Qtr Revenue Growth": "number",
+    });
+    applyColumnTypes(rows, {
+      0: "number",
+      1: "number",
+      2: "number",
+      3: "number",
+      4: "number",
+      5: "number",
+      6: "number",
+      7: "number",
+      8: "number",
+      9: "number",
+    }, 5);
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -248,6 +363,14 @@ async function COMPANY_DIVIDEND(ticker) {
     for (const [year, info] of Object.entries(div.historical_dividends || {})) {
       rows.push([year, info.total_dividend, info.total_yield]);
     }
+    applyKeyValueTypes(rows, {
+      "Yield TTM": "number",
+      "Dividend TTM": "number",
+      "Payout Ratio": "number",
+      "Cash Payout Ratio": "number",
+      "Last Ex-Dividend Date": "date",
+    });
+    applyColumnTypes(rows, { 0: "number", 1: "number", 2: "number" }, 7);
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -268,6 +391,7 @@ async function COMPANY_OWNERSHIP(ticker) {
     (o.major_shareholders || []).forEach((s) =>
       rows.push([s.name, s.share_percentage, s.share_amount, s.share_value])
     );
+    applyColumnTypes(rows, { 1: "number", 2: "number", 3: "number" });
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -285,13 +409,21 @@ async function SUBSECTOR_STATISTICS(subSector) {
   try {
     const d = await apiFetch(`/subsector/report/${subSector}/`, { sections: "statistics" });
     const s = d.statistics;
-    return sanitize([
+    const rows = [
       ["Total Companies", s.total_companies],
       ["Filtered Median PE", s.filtered_median_pe],
       ["Filtered Weighted Avg PE", s.filtered_weighted_avg_pe],
       ["Min Company PE", s.min_company_pe],
       ["Max Company PE", s.max_company_pe],
-    ]);
+    ];
+    applyKeyValueTypes(rows, {
+      "Total Companies": "number",
+      "Filtered Median PE": "number",
+      "Filtered Weighted Avg PE": "number",
+      "Min Company PE": "number",
+      "Max Company PE": "number",
+    });
+    return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
   }
@@ -307,13 +439,21 @@ async function SUBSECTOR_MARKET_CAP(subSector) {
   try {
     const d = await apiFetch(`/subsector/report/${subSector}/`, { sections: "market_cap" });
     const m = d.market_cap;
-    return sanitize([
+    const rows = [
       ["Total Market Cap", m.total_market_cap],
       ["Avg Market Cap", m.avg_market_cap],
       ["1W Change", m.mcap_summary?.mcap_change?.["1w"]],
       ["1Y Change", m.mcap_summary?.mcap_change?.["1y"]],
       ["YTD Change", m.mcap_summary?.mcap_change?.ytd],
-    ]);
+    ];
+    applyKeyValueTypes(rows, {
+      "Total Market Cap": "number",
+      "Avg Market Cap": "number",
+      "1W Change": "number",
+      "1Y Change": "number",
+      "YTD Change": "number",
+    });
+    return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
   }
@@ -332,6 +472,7 @@ async function SUBSECTOR_VALUATION(subSector) {
     for (const [year, v] of Object.entries(d.valuation?.historical_valuation || {})) {
       rows.push([year, v.pe, v.pb, v.ps, v.pcf]);
     }
+    applyColumnTypes(rows, { 0: "number", 1: "number", 2: "number", 3: "number", 4: "number" });
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -351,6 +492,7 @@ async function SUBSECTOR_GROWTH(subSector) {
     for (const [year, g] of Object.entries(d.growth?.weighted_avg_growth_data || {})) {
       rows.push([year, g.avg_annual_earning_growth, g.avg_annual_revenue_growth]);
     }
+    applyColumnTypes(rows, { 0: "number", 1: "number", 2: "number" });
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -386,6 +528,15 @@ async function QUARTERLY_FINANCIALS(ticker, nQuarters, reportDate) {
         q.operating_cash_flow,
       ])
     );
+    applyColumnTypes(rows, {
+      0: "date",
+      1: "number",
+      2: "number",
+      3: "number",
+      4: "number",
+      5: "number",
+      6: "number",
+    });
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -406,6 +557,7 @@ async function COMPANY_SEGMENTS(ticker, financialYear) {
     const data = await apiFetch(`/company/get-segments/${ticker}/`, params);
     const rows = [["Source", "Target", "Value (IDR)"]];
     (data.revenue_breakdown || []).forEach((r) => rows.push([r.source, r.target, r.value]));
+    applyColumnTypes(rows, { 2: "number" });
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -425,6 +577,7 @@ async function DAILY_PRICE(ticker, start, end) {
     const data = await apiFetch(`/daily/${ticker}/`, { start, end });
     const rows = [["Date", "Close", "Volume", "Market Cap"]];
     data.forEach((d) => rows.push([d.date, d.close, d.volume, d.market_cap]));
+    applyColumnTypes(rows, { 0: "date", 1: "number", 2: "number", 3: "number" });
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -443,6 +596,7 @@ async function IDX_MARKET_CAP(start, end) {
     const data = await apiFetch("/idx-total/", { start, end });
     const rows = [["Date", "IDX Total Market Cap"]];
     data.forEach((d) => rows.push([d.date, d.idx_total_market_cap]));
+    applyColumnTypes(rows, { 0: "date", 1: "number" });
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -462,6 +616,7 @@ async function INDEX_DAILY(indexCode, start, end) {
     const data = await apiFetch(`/index-daily/${indexCode}/`, { start, end });
     const rows = [["Date", "Index", "Price"]];
     data.forEach((d) => rows.push([d.date, d.index_code, d.price]));
+    applyColumnTypes(rows, { 0: "date", 2: "number" });
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -483,6 +638,7 @@ async function MOST_TRADED(start, end, nStock) {
     for (const [date, stocks] of Object.entries(data)) {
       stocks.forEach((s) => rows.push([date, s.symbol, s.company_name, s.volume, s.price]));
     }
+    applyColumnTypes(rows, { 0: "date", 3: "number", 4: "number" });
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -512,6 +668,7 @@ async function TOP_MOVERS(classifications, periods, nStock) {
         );
       }
     }
+    applyColumnTypes(rows, { 4: "number", 5: "number" });
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -527,13 +684,15 @@ async function TOP_MOVERS(classifications, periods, nStock) {
 async function IPO_PERFORMANCE(ticker) {
   try {
     const d = await apiFetch(`/listing-performance/${ticker}/`);
-    return sanitize([
+    const rows = [
       ["Period", "Change"],
       ["7 Days", d.chg_7d],
       ["30 Days", d.chg_30d],
       ["90 Days", d.chg_90d],
       ["365 Days", d.chg_365d],
-    ]);
+    ];
+    applyColumnTypes(rows, { 1: "number" });
+    return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
   }
@@ -589,6 +748,7 @@ async function KLSE_TOP_COMPANIES(classifications, sector) {
         rows.push([cls, s.symbol, s.company_name, val]);
       });
     }
+    applyColumnTypes(rows, { 3: "number" });
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -605,7 +765,7 @@ async function KLSE_OVERVIEW(ticker) {
   try {
     const d = await apiFetch(`/klse/company/report/${ticker}/`);
     const o = d.overview;
-    return sanitize([
+    const rows = [
       ["Name", d.name],
       ["Market Cap", o.market_cap],
       ["Sector", o.sector],
@@ -613,7 +773,14 @@ async function KLSE_OVERVIEW(ticker) {
       ["Volume", o.volume],
       ["1D Change", o.change_1d],
       ["7D Change", o.change_7d],
-    ]);
+    ];
+    applyKeyValueTypes(rows, {
+      "Market Cap": "number",
+      Volume: "number",
+      "1D Change": "number",
+      "7D Change": "number",
+    });
+    return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
   }
@@ -629,14 +796,23 @@ async function KLSE_VALUATION(ticker) {
   try {
     const d = await apiFetch(`/klse/company/report/${ticker}/`);
     const v = d.valuation;
-    return sanitize([
+    const rows = [
       ["PE", v.pe],
       ["PE TTM", v.pe_ttm],
       ["PB", v.pb],
       ["PS TTM", v.ps_ttm],
       ["PCF", v.pcf],
       ["PCF TTM", v.pcf_ttm],
-    ]);
+    ];
+    applyKeyValueTypes(rows, {
+      PE: "number",
+      "PE TTM": "number",
+      PB: "number",
+      "PS TTM": "number",
+      PCF: "number",
+      "PCF TTM": "number",
+    });
+    return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
   }
@@ -665,6 +841,14 @@ async function KLSE_FINANCIALS(ticker) {
       const e = (f.historical_earnings || [])[i];
       rows.push([r.period, r.revenue, e?.earnings]);
     });
+    applyKeyValueTypes(rows, {
+      EPS: "number",
+      "Operating Margin": "number",
+      "Net Profit Margin": "number",
+      "Current Ratio": "number",
+      "Debt to Equity": "number",
+    });
+    applyColumnTypes(rows, { 1: "number", 2: "number" }, 7);
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -681,14 +865,23 @@ async function KLSE_DIVIDEND(ticker) {
   try {
     const d = await apiFetch(`/klse/company/report/${ticker}/`);
     const div = d.dividend;
-    return sanitize([
+    const rows = [
       ["5Y Avg Yield", div.dividend_yield_5y_avg],
       ["Growth Rate", div.dividend_growth_rate],
       ["Payout Ratio", div.payout_ratio],
       ["Forward Dividend", div.forward_dividend],
       ["Forward Div Yield", div.forward_dividend_yield],
       ["Dividend TTM", div.dividend_ttm],
-    ]);
+    ];
+    applyKeyValueTypes(rows, {
+      "5Y Avg Yield": "number",
+      "Growth Rate": "number",
+      "Payout Ratio": "number",
+      "Forward Dividend": "number",
+      "Forward Div Yield": "number",
+      "Dividend TTM": "number",
+    });
+    return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
   }
@@ -744,6 +937,7 @@ async function SGX_TOP_COMPANIES(classifications, sector) {
         rows.push([cls, s.symbol, s.company_name, val]);
       });
     }
+    applyColumnTypes(rows, { 3: "number" });
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -760,7 +954,7 @@ async function SGX_OVERVIEW(ticker) {
   try {
     const d = await apiFetch(`/sgx/company/report/${ticker}/`);
     const o = d.overview;
-    return sanitize([
+    const rows = [
       ["Name", d.name],
       ["Market Cap", o.market_cap],
       ["Sector", o.sector],
@@ -771,7 +965,17 @@ async function SGX_OVERVIEW(ticker) {
       ["1M Change", o.change_1m],
       ["1Y Change", o.change_1y],
       ["YTD Change", o.change_ytd],
-    ]);
+    ];
+    applyKeyValueTypes(rows, {
+      "Market Cap": "number",
+      Volume: "number",
+      "1D Change": "number",
+      "7D Change": "number",
+      "1M Change": "number",
+      "1Y Change": "number",
+      "YTD Change": "number",
+    });
+    return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
   }
@@ -787,7 +991,9 @@ async function SGX_VALUATION(ticker) {
   try {
     const d = await apiFetch(`/sgx/company/report/${ticker}/`);
     const v = d.valuation;
-    return sanitize([["PE", v.pe], ["PB", v.pb], ["PS", v.ps], ["PCF", v.pcf]]);
+    const rows = [["PE", v.pe], ["PB", v.pb], ["PS", v.ps], ["PCF", v.pcf]];
+    applyKeyValueTypes(rows, { PE: "number", PB: "number", PS: "number", PCF: "number" });
+    return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
   }
@@ -813,6 +1019,12 @@ async function SGX_FINANCIALS(ticker) {
     for (const [year, data] of Object.entries(f.historical_financials || {})) {
       rows.push([year, data.revenue, data.earnings]);
     }
+    applyKeyValueTypes(rows, {
+      EPS: "number",
+      "Operating Margin": "number",
+      "Net Profit Margin": "number",
+    });
+    applyColumnTypes(rows, { 0: "number", 1: "number", 2: "number" }, 5);
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
@@ -841,6 +1053,14 @@ async function SGX_DIVIDEND(ticker) {
     for (const [year, info] of Object.entries(div.historical_dividends || {})) {
       rows.push([year, info.total_dividend, info.total_yield]);
     }
+    applyKeyValueTypes(rows, {
+      "5Y Avg Yield": "number",
+      "Growth Rate": "number",
+      "Payout Ratio": "number",
+      "Forward Dividend": "number",
+      "Dividend TTM": "number",
+    });
+    applyColumnTypes(rows, { 0: "number", 1: "number", 2: "number" }, 7);
     return sanitize(rows);
   } catch (error) {
     return [["Error", error.message]];
