@@ -29,10 +29,17 @@
         <h2 class="ms-font-xl">Please <a target="_blank" href="https://learn.microsoft.com/office/dev/add-ins/testing/test-debug-office-add-ins#sideload-an-office-add-in-for-testing">sideload</a> your add-in to see app body.</h2>
     </section>
     <main id="app-body" class="ms-welcome__main" style="display: none;">
-        <h2 class="ms-font-xl">Store your API key securely for this workbook</h2>
-        <p class="ms-font-m app-description">The key is saved in workbook settings, so it does not appear in worksheet formulas.</p>
+        <h2 class="ms-font-xl">Welcome to Sectors Financial</h2>
+        <p class="ms-font-m app-description">Pull real-time IDX stock data, financials, valuations, dividends, and more directly into your Excel spreadsheet using <strong>SECTORS.*</strong> custom functions.</p>
 
         <div class="key-card">
+            <p class="ms-font-s" style="margin-bottom: 8px;">
+                Don't have an account? <a href="https://sectors.app/auth" target="_blank">Sign up at sectors.app</a> to get your free API key.
+            </p>
+            <p class="ms-font-s" style="margin-bottom: 12px;">
+                Already have an account? <a href="https://sectors.app/auth" target="_blank">Sign in</a> and copy your API key from the dashboard.
+                Need help? <a href="https://supertype.ai/contact" target="_blank">Contact us</a>.
+            </p>
             <label class="ms-font-m" for="api-key-input">Sectors API Key</label>
             <input id="api-key-input" class="api-key-input" type="password" placeholder="Paste your API key" autocomplete="off" />
             <div class="actions-row">
@@ -45,6 +52,10 @@
             </div>
             <p class="ms-font-s current-key">Current key: <span id="current-key-value">Not set</span></p>
             <p id="api-key-status" class="ms-font-s status-message" aria-live="polite"></p>
+        </div>
+
+        <div style="margin-top: 16px; padding: 12px; background: #f3f2f1; border-radius: 4px;">
+            <p class="ms-font-s" style="margin: 0;"><strong>Enterprise / Team access:</strong> Visit <a href="https://sectors.app/auth" target="_blank">sectors.app/api</a> or email <a href="mailto:sectors@supertype.ai">sectors@supertype.ai</a> to inquire about team plans and enterprise pricing.</p>
         </div>
     </main>
 </body>

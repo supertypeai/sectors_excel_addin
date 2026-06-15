@@ -129,6 +129,7 @@ function sanitize(rows) {
 /**
  * Screen IDX companies using SQL-like filters.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} where SQL-like filter (e.g. "sub_sector = 'banks' and pe_ttm < 15").
  * @param {string} [orderBy] Sort field with optional "-" prefix for desc (e.g. "-market_cap").
  * @param {number} [limit] Max results (default 50, max 200).
@@ -149,6 +150,7 @@ async function SCREEN(where, orderBy, limit) {
 /**
  * Screen IDX companies using natural language.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} query Plain English query (e.g. "top 10 banks by market cap").
  * @returns {string[][]} Matching companies.
  */
@@ -167,6 +169,7 @@ async function SCREEN_NL(query) {
 /**
  * Get free float percentage for companies.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} [subSector] Filter by subsector (e.g. "banks").
  * @returns {string[][]} Companies with free float percentages.
  */
@@ -190,6 +193,7 @@ async function FREE_FLOAT(subSector) {
 /**
  * Get company overview: market cap, sector, ESG, price, listing info.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker IDX ticker (e.g. "BBCA").
  * @returns {string[][]} Key-value overview data.
  */
@@ -229,6 +233,7 @@ async function COMPANY_OVERVIEW(ticker) {
 /**
  * Get company valuation: PE, PB, PS, PCF ratios over time.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker IDX ticker (e.g. "BBCA").
  * @returns {string[][]} Valuation metrics table.
  */
@@ -279,6 +284,7 @@ async function COMPANY_VALUATION(ticker) {
 /**
  * Get company financials: income stmt, balance sheet, ratios by year.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker IDX ticker (e.g. "BBCA").
  * @returns {string[][]} Historical financial data table.
  */
@@ -344,6 +350,7 @@ async function COMPANY_FINANCIALS(ticker) {
 /**
  * Get company dividend history, yield, and payout ratio.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker IDX ticker (e.g. "BBCA").
  * @returns {string[][]} Dividend metrics and history.
  */
@@ -380,6 +387,7 @@ async function COMPANY_DIVIDEND(ticker) {
 /**
  * Get company major shareholders and institutional transaction flow.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker IDX ticker (e.g. "BBCA").
  * @returns {string[][]} Ownership breakdown table.
  */
@@ -402,6 +410,7 @@ async function COMPANY_OWNERSHIP(ticker) {
 /**
  * Get subsector statistics: company count, PE distribution.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} subSector Subsector slug (e.g. "banks").
  * @returns {string[][]} Subsector statistics.
  */
@@ -432,6 +441,7 @@ async function SUBSECTOR_STATISTICS(subSector) {
 /**
  * Get subsector market cap data and performance.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} subSector Subsector slug (e.g. "banks").
  * @returns {string[][]} Market cap metrics and changes.
  */
@@ -462,6 +472,7 @@ async function SUBSECTOR_MARKET_CAP(subSector) {
 /**
  * Get subsector valuation: historical PE/PB/PS/PCF with percentile rank.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} subSector Subsector slug (e.g. "banks").
  * @returns {string[][]} Valuation table by year.
  */
@@ -482,6 +493,7 @@ async function SUBSECTOR_VALUATION(subSector) {
 /**
  * Get subsector growth metrics and forecasts.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} subSector Subsector slug (e.g. "banks").
  * @returns {string[][]} Growth data by year.
  */
@@ -503,6 +515,7 @@ async function SUBSECTOR_GROWTH(subSector) {
 /**
  * Get quarterly financial statements for a company.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker IDX ticker (e.g. "BBCA").
  * @param {number} [nQuarters] Number of recent quarters to retrieve.
  * @param {string} [reportDate] Specific report date (YYYY-MM-DD).
@@ -546,6 +559,7 @@ async function QUARTERLY_FINANCIALS(ticker, nQuarters, reportDate) {
 /**
  * Get revenue/cost breakdown by business segment.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker IDX ticker (e.g. "ASII").
  * @param {number} [financialYear] Year (defaults to latest).
  * @returns {string[][]} Revenue segment breakdown.
@@ -567,6 +581,7 @@ async function COMPANY_SEGMENTS(ticker, financialYear) {
 /**
  * Get daily close price, volume, and market cap for a ticker.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker IDX ticker (e.g. "BBCA").
  * @param {string} [start] Start date (YYYY-MM-DD).
  * @param {string} [end] End date (YYYY-MM-DD).
@@ -587,6 +602,7 @@ async function DAILY_PRICE(ticker, start, end) {
 /**
  * Get IDX total market capitalization over time.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} [start] Start date (YYYY-MM-DD).
  * @param {string} [end] End date (YYYY-MM-DD).
  * @returns {string[][]} IDX total market cap by date.
@@ -606,6 +622,7 @@ async function IDX_MARKET_CAP(start, end) {
 /**
  * Get daily closing prices for a stock index.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} indexCode Index code (e.g. "ihsg", "lq45", "idx30").
  * @param {string} [start] Start date (YYYY-MM-DD).
  * @param {string} [end] End date (YYYY-MM-DD).
@@ -626,6 +643,7 @@ async function INDEX_DAILY(indexCode, start, end) {
 /**
  * Get most traded stocks by volume in a date range.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} [start] Start date (YYYY-MM-DD).
  * @param {string} [end] End date (YYYY-MM-DD).
  * @param {number} [nStock] Number of stocks (default 5, max 10).
@@ -648,6 +666,7 @@ async function MOST_TRADED(start, end, nStock) {
 /**
  * Get top stock price movers (gainers and losers).
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} [classifications] "top_gainers", "top_losers", or both.
  * @param {string} [periods] "1d", "7d", "14d", "30d", "365d".
  * @param {number} [nStock] Number of stocks (default 5, max 10).
@@ -678,6 +697,7 @@ async function TOP_MOVERS(classifications, periods, nStock) {
 /**
  * Get stock price performance since IPO listing.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker IDX ticker (e.g. "GOTO").
  * @returns {string[][]} Price change since listing by period.
  */
@@ -702,6 +722,7 @@ async function IPO_PERFORMANCE(ticker) {
 /**
  * Get available KLSE sectors.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @returns {string[][]} List of KLSE sectors.
  */
 async function KLSE_SECTORS() {
@@ -716,6 +737,7 @@ async function KLSE_SECTORS() {
 /**
  * Get KLSE companies in a sector.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} sector KLSE sector slug (e.g. "financials").
  * @returns {string[][]} Companies list.
  */
@@ -734,6 +756,7 @@ async function KLSE_COMPANIES(sector) {
 /**
  * Get top KLSE companies by a classification metric.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} [classifications] "dividend_yield","revenue","earnings","market_cap","pe".
  * @param {string} [sector] KLSE sector slug.
  * @returns {string[][]} Top KLSE companies.
@@ -758,6 +781,7 @@ async function KLSE_TOP_COMPANIES(classifications, sector) {
 /**
  * Get KLSE company overview: market cap, sector, price changes.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker KLSE ticker (e.g. "1155").
  * @returns {string[][]} Overview data.
  */
@@ -789,6 +813,7 @@ async function KLSE_OVERVIEW(ticker) {
 /**
  * Get KLSE company valuation ratios.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker KLSE ticker (e.g. "1155").
  * @returns {string[][]} Valuation metrics.
  */
@@ -821,6 +846,7 @@ async function KLSE_VALUATION(ticker) {
 /**
  * Get KLSE company financial data: earnings, revenue, ratios.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker KLSE ticker (e.g. "1155").
  * @returns {string[][]} Financial data.
  */
@@ -858,6 +884,7 @@ async function KLSE_FINANCIALS(ticker) {
 /**
  * Get KLSE company dividend data.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker KLSE ticker (e.g. "1155").
  * @returns {string[][]} Dividend metrics.
  */
@@ -891,6 +918,7 @@ async function KLSE_DIVIDEND(ticker) {
 /**
  * Get available SGX sectors.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @returns {string[][]} List of SGX sectors.
  */
 async function SGX_SECTORS() {
@@ -905,6 +933,7 @@ async function SGX_SECTORS() {
 /**
  * Get SGX companies in a sector.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} sector SGX sector slug (e.g. "financial-services").
  * @returns {string[][]} Companies list.
  */
@@ -923,6 +952,7 @@ async function SGX_COMPANIES(sector) {
 /**
  * Get top SGX companies by a classification metric.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} [classifications] "dividend_yield","revenue","earnings","market_cap","pe".
  * @param {string} [sector] SGX sector slug.
  * @returns {string[][]} Top SGX companies.
@@ -947,6 +977,7 @@ async function SGX_TOP_COMPANIES(classifications, sector) {
 /**
  * Get SGX company overview: market cap, sector, multi-period price changes.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker SGX ticker (e.g. "D05").
  * @returns {string[][]} Overview data.
  */
@@ -984,6 +1015,7 @@ async function SGX_OVERVIEW(ticker) {
 /**
  * Get SGX company valuation ratios.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker SGX ticker (e.g. "D05").
  * @returns {string[][]} Valuation metrics.
  */
@@ -1002,6 +1034,7 @@ async function SGX_VALUATION(ticker) {
 /**
  * Get SGX company financial data with income stmt and balance sheet.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker SGX ticker (e.g. "D05").
  * @returns {string[][]} Financial data table.
  */
@@ -1034,6 +1067,7 @@ async function SGX_FINANCIALS(ticker) {
 /**
  * Get SGX company dividend data with full history.
  * @customfunction
+ * @helpurl https://sectors.app/api
  * @param {string} ticker SGX ticker (e.g. "D05").
  * @returns {string[][]} Dividend metrics and yearly history.
  */

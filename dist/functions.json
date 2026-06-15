@@ -3,6 +3,7 @@
     "functions": [
         {
             "description": "Screen IDX companies using SQL-like filters.",
+            "helpUrl": "https://sectors.app/api",
             "id": "SCREEN",
             "name": "SCREEN",
             "parameters": [
@@ -31,6 +32,7 @@
         },
         {
             "description": "Screen IDX companies using natural language.",
+            "helpUrl": "https://sectors.app/api",
             "id": "SCREEN_NL",
             "name": "SCREEN_NL",
             "parameters": [
@@ -47,6 +49,7 @@
         },
         {
             "description": "Get free float percentage for companies.",
+            "helpUrl": "https://sectors.app/api",
             "id": "FREE_FLOAT",
             "name": "FREE_FLOAT",
             "parameters": [
@@ -64,6 +67,7 @@
         },
         {
             "description": "Get company overview: market cap, sector, ESG, price, listing info.",
+            "helpUrl": "https://sectors.app/api",
             "id": "COMPANY_OVERVIEW",
             "name": "COMPANY_OVERVIEW",
             "parameters": [
@@ -80,6 +84,7 @@
         },
         {
             "description": "Get company valuation: PE, PB, PS, PCF ratios over time.",
+            "helpUrl": "https://sectors.app/api",
             "id": "COMPANY_VALUATION",
             "name": "COMPANY_VALUATION",
             "parameters": [
@@ -96,6 +101,7 @@
         },
         {
             "description": "Get company financials: income stmt, balance sheet, ratios by year.",
+            "helpUrl": "https://sectors.app/api",
             "id": "COMPANY_FINANCIALS",
             "name": "COMPANY_FINANCIALS",
             "parameters": [
@@ -112,6 +118,7 @@
         },
         {
             "description": "Get company dividend history, yield, and payout ratio.",
+            "helpUrl": "https://sectors.app/api",
             "id": "COMPANY_DIVIDEND",
             "name": "COMPANY_DIVIDEND",
             "parameters": [
@@ -128,6 +135,7 @@
         },
         {
             "description": "Get company major shareholders and institutional transaction flow.",
+            "helpUrl": "https://sectors.app/api",
             "id": "COMPANY_OWNERSHIP",
             "name": "COMPANY_OWNERSHIP",
             "parameters": [
@@ -144,6 +152,7 @@
         },
         {
             "description": "Get subsector statistics: company count, PE distribution.",
+            "helpUrl": "https://sectors.app/api",
             "id": "SUBSECTOR_STATISTICS",
             "name": "SUBSECTOR_STATISTICS",
             "parameters": [
@@ -160,6 +169,7 @@
         },
         {
             "description": "Get subsector market cap data and performance.",
+            "helpUrl": "https://sectors.app/api",
             "id": "SUBSECTOR_MARKET_CAP",
             "name": "SUBSECTOR_MARKET_CAP",
             "parameters": [
@@ -176,6 +186,7 @@
         },
         {
             "description": "Get subsector valuation: historical PE/PB/PS/PCF with percentile rank.",
+            "helpUrl": "https://sectors.app/api",
             "id": "SUBSECTOR_VALUATION",
             "name": "SUBSECTOR_VALUATION",
             "parameters": [
@@ -192,6 +203,7 @@
         },
         {
             "description": "Get subsector growth metrics and forecasts.",
+            "helpUrl": "https://sectors.app/api",
             "id": "SUBSECTOR_GROWTH",
             "name": "SUBSECTOR_GROWTH",
             "parameters": [
@@ -208,6 +220,7 @@
         },
         {
             "description": "Get quarterly financial statements for a company.",
+            "helpUrl": "https://sectors.app/api",
             "id": "QUARTERLY_FINANCIALS",
             "name": "QUARTERLY_FINANCIALS",
             "parameters": [
@@ -236,6 +249,7 @@
         },
         {
             "description": "Get revenue/cost breakdown by business segment.",
+            "helpUrl": "https://sectors.app/api",
             "id": "COMPANY_SEGMENTS",
             "name": "COMPANY_SEGMENTS",
             "parameters": [
@@ -258,6 +272,7 @@
         },
         {
             "description": "Get daily close price, volume, and market cap for a ticker.",
+            "helpUrl": "https://sectors.app/api",
             "id": "DAILY_PRICE",
             "name": "DAILY_PRICE",
             "parameters": [
@@ -286,6 +301,7 @@
         },
         {
             "description": "Get IDX total market capitalization over time.",
+            "helpUrl": "https://sectors.app/api",
             "id": "IDX_MARKET_CAP",
             "name": "IDX_MARKET_CAP",
             "parameters": [
@@ -309,6 +325,7 @@
         },
         {
             "description": "Get daily closing prices for a stock index.",
+            "helpUrl": "https://sectors.app/api",
             "id": "INDEX_DAILY",
             "name": "INDEX_DAILY",
             "parameters": [
@@ -337,6 +354,7 @@
         },
         {
             "description": "Get most traded stocks by volume in a date range.",
+            "helpUrl": "https://sectors.app/api",
             "id": "MOST_TRADED",
             "name": "MOST_TRADED",
             "parameters": [
@@ -366,6 +384,7 @@
         },
         {
             "description": "Get top stock price movers (gainers and losers).",
+            "helpUrl": "https://sectors.app/api",
             "id": "TOP_MOVERS",
             "name": "TOP_MOVERS",
             "parameters": [
@@ -395,6 +414,7 @@
         },
         {
             "description": "Get stock price performance since IPO listing.",
+            "helpUrl": "https://sectors.app/api",
             "id": "IPO_PERFORMANCE",
             "name": "IPO_PERFORMANCE",
             "parameters": [
@@ -411,6 +431,7 @@
         },
         {
             "description": "Get available KLSE sectors.",
+            "helpUrl": "https://sectors.app/api",
             "id": "KLSE_SECTORS",
             "name": "KLSE_SECTORS",
             "parameters": [],
@@ -421,6 +442,7 @@
         },
         {
             "description": "Get KLSE companies in a sector.",
+            "helpUrl": "https://sectors.app/api",
             "id": "KLSE_COMPANIES",
             "name": "KLSE_COMPANIES",
             "parameters": [
@@ -437,6 +459,7 @@
         },
         {
             "description": "Get top KLSE companies by a classification metric.",
+            "helpUrl": "https://sectors.app/api",
             "id": "KLSE_TOP_COMPANIES",
             "name": "KLSE_TOP_COMPANIES",
             "parameters": [
@@ -460,6 +483,7 @@
         },
         {
             "description": "Get KLSE company overview: market cap, sector, price changes.",
+            "helpUrl": "https://sectors.app/api",
             "id": "KLSE_OVERVIEW",
             "name": "KLSE_OVERVIEW",
             "parameters": [
@@ -476,6 +500,7 @@
         },
         {
             "description": "Get KLSE company valuation ratios.",
+            "helpUrl": "https://sectors.app/api",
             "id": "KLSE_VALUATION",
             "name": "KLSE_VALUATION",
             "parameters": [
@@ -492,6 +517,7 @@
         },
         {
             "description": "Get KLSE company financial data: earnings, revenue, ratios.",
+            "helpUrl": "https://sectors.app/api",
             "id": "KLSE_FINANCIALS",
             "name": "KLSE_FINANCIALS",
             "parameters": [
@@ -508,6 +534,7 @@
         },
         {
             "description": "Get KLSE company dividend data.",
+            "helpUrl": "https://sectors.app/api",
             "id": "KLSE_DIVIDEND",
             "name": "KLSE_DIVIDEND",
             "parameters": [
@@ -524,6 +551,7 @@
         },
         {
             "description": "Get available SGX sectors.",
+            "helpUrl": "https://sectors.app/api",
             "id": "SGX_SECTORS",
             "name": "SGX_SECTORS",
             "parameters": [],
@@ -534,6 +562,7 @@
         },
         {
             "description": "Get SGX companies in a sector.",
+            "helpUrl": "https://sectors.app/api",
             "id": "SGX_COMPANIES",
             "name": "SGX_COMPANIES",
             "parameters": [
@@ -550,6 +579,7 @@
         },
         {
             "description": "Get top SGX companies by a classification metric.",
+            "helpUrl": "https://sectors.app/api",
             "id": "SGX_TOP_COMPANIES",
             "name": "SGX_TOP_COMPANIES",
             "parameters": [
@@ -573,6 +603,7 @@
         },
         {
             "description": "Get SGX company overview: market cap, sector, multi-period price changes.",
+            "helpUrl": "https://sectors.app/api",
             "id": "SGX_OVERVIEW",
             "name": "SGX_OVERVIEW",
             "parameters": [
@@ -589,6 +620,7 @@
         },
         {
             "description": "Get SGX company valuation ratios.",
+            "helpUrl": "https://sectors.app/api",
             "id": "SGX_VALUATION",
             "name": "SGX_VALUATION",
             "parameters": [
@@ -605,6 +637,7 @@
         },
         {
             "description": "Get SGX company financial data with income stmt and balance sheet.",
+            "helpUrl": "https://sectors.app/api",
             "id": "SGX_FINANCIALS",
             "name": "SGX_FINANCIALS",
             "parameters": [
@@ -621,6 +654,7 @@
         },
         {
             "description": "Get SGX company dividend data with full history.",
+            "helpUrl": "https://sectors.app/api",
             "id": "SGX_DIVIDEND",
             "name": "SGX_DIVIDEND",
             "parameters": [
