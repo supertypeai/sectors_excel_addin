@@ -4,6 +4,6 @@ dist
 *.local
 
 # Generated — do not edit manually
-packages/core/src/schema.ts
+# packages/core/src/schema.ts
 deployments/excel/src/functions/functions.json
 packages/core/src/functions/

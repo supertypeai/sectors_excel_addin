@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "vite --config deployments/excel/vite.config.ts",
-    "build": "npm run generate && tsc --noEmit && vite build --config deployments/excel/vite.config.ts",
+    "build": "npm run generate:functions && tsc --noEmit && vite build --config deployments/excel/vite.config.ts",
     "preview": "vite preview --config deployments/excel/vite.config.ts",
     "generate:schema": "npx tsx scripts/generate_schema.ts",
     "generate:functions": "npx tsx scripts/generate_functions.ts",
