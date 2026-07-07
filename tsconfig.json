@@ -1,26 +1,29 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "baseUrl": ".",
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "jsx": "react",
-    "noEmitOnError": true,
-    "outDir": "lib",
-    "sourceMap": true,
-    "target": "es5",
-    "lib": [
-      "es2015",
-      "dom"
-    ]
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "types": ["office-js", "office-runtime"],
+    "paths": {
+      "@sectors/core": ["./packages/core/src"],
+      "@sectors/core/*": ["./packages/core/src/*"],
+      "@sectors/adapter-excel": ["./packages/adapter-excel/src"],
+      "@sectors/adapter-excel/*": ["./packages/adapter-excel/src/*"],
+      "@sectors/client": ["./packages/client/src"],
+      "@sectors/client/*": ["./packages/client/src/*"],
+    },
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "lib",
-    "lib-amd"
-  ],
-  "ts-node": { 
-    "files": true 
-  }
+  "include": ["packages", "deployments"],
 }

@@ -1,2 +1,9 @@
-/node_modules
-/v2
+node_modules
+dist
+.env
+*.local
+
+# Generated — do not edit manually
+packages/core/src/schema.ts
+deployments/excel/src/functions/functions.json
+packages/core/src/functions/

@@ -2,27 +2,1359 @@
     "allowCustomDataForDataTypeAny": true,
     "functions": [
         {
-            "description": "Screen IDX companies using SQL-like filters.",
-            "helpUrl": "https://sectors.app/api",
+            "id": "BROKER_ACTIVITY_BY_CODE",
+            "name": "BROKER_ACTIVITY_BY_CODE",
+            "description": "Broker Activity By Code",
+            "parameters": [
+                {
+                    "name": "broker_code",
+                    "description": "Broker code. E.g. `MG`, `AK`, `CC`.",
+                    "type": "string"
+                },
+                {
+                    "name": "symbol",
+                    "description": "Optional filter to a single stock ticker (e.g. `BBCA`).",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "start",
+                    "description": "Start date (YYYY-MM-DD). Default: end - 14 days.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date (YYYY-MM-DD). Default: today.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "BROKER_ACTIVITY_PER_SYMBOL",
+            "name": "BROKER_ACTIVITY_PER_SYMBOL",
+            "description": "Broker Activity Per Symbol",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "IDX ticker symbol. E.g. `BBCA`, `GOTO`.",
+                    "type": "string"
+                },
+                {
+                    "name": "broker_code",
+                    "description": "Optional filter to a single broker code (e.g. `MG`).",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "start",
+                    "description": "Start date (YYYY-MM-DD). Default: end - 14 days.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date (YYYY-MM-DD). Default: today.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "BROKER_REGISTRY",
+            "name": "BROKER_REGISTRY",
+            "description": "Broker Registry",
+            "parameters": [
+                {
+                    "name": "cohort",
+                    "description": "Optional filter by broker cohort (case-insensitive).",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "origin",
+                    "description": "Optional filter by broker origin.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "COMPANIES_SCREENER",
+            "name": "COMPANIES_SCREENER",
+            "description": "Companies Screener",
+            "parameters": [
+                {
+                    "name": "where",
+                    "description": "SQL-like conditions for advanced filtering. Ignored if `q` is present. Supports operators `=`, `!=`, `>`, `>=`, `<`, `<=`, `like`, `in` combined with `and`/`or`. Use bracket notation for yearly fields: `revenue[2024] > 1000000000000`. Supports arithmetic on both sides: `revenue[2024] / total_assets[2024] > 0.5`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "q",
+                    "description": "A natural language query (e.g. `top 10 tech companies by revenue in 2023`). When `q` is provided, all other query parameters (`where`, `order_by`, etc.) are ignored as the LLM will generate them.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "order_by",
+                    "description": "Field to sort results by. Use `-` prefix for descending order (e.g. `-market_cap`). Supports arithmetic expressions (e.g. `-(earnings[2024]/earnings[2023])`). Ignored if `q` is present.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "desc",
+                    "description": "Sort in descending order. Ignored if `q` is present.",
+                    "type": "boolean",
+                    "optional": true
+                },
+                {
+                    "name": "limit",
+                    "description": "Maximum number of results to return. Max: 200. Ignored if `q` is present.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "offset",
+                    "description": "Number of results to skip for pagination. Ignored if `q` is present.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "include_query_values",
+                    "description": "If `true`, the response includes a `query_values` object showing the interpreted year and country extracted from the query.",
+                    "type": "boolean",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "COMPANIES_WITH_REVENUE_SEGMENTS",
+            "name": "COMPANIES_WITH_REVENUE_SEGMENTS",
+            "description": "Companies with Revenue Segments",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "COMPANY_FILINGS",
+            "name": "COMPANY_FILINGS",
+            "description": "Company Filings",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "IDX symbol symbol to filter by. E.g. `BBCA`, `BMRI`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "sector",
+                    "description": "Kebab-case sector slug. E.g. `healthcare`, `financials`. Get valid values from the [Subsectors](../helper-list/subsectors) endpoint.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "sub_sector",
+                    "description": "Kebab-case subsector slug. E.g. `banks`, `tobacco`. Get valid values from the [Subsectors](../helper-list/subsectors) endpoint.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "start",
+                    "description": "Start date in `YYYY-MM-DD` format. Optional; if omitted, no lower bound is applied. Filters on `timestamp`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date in `YYYY-MM-DD` format. Optional; if omitted, no upper bound is applied. Future dates return 400.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "limit",
+                    "description": "Number of results to return. Maximum: 30.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "offset",
+                    "description": "Number of results to skip for pagination.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "transaction_type",
+                    "description": "Filter by transaction direction: `buy`, `sell`, or `others`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "tags",
+                    "description": "Comma-separated tag slugs. E.g. `Bullish,insider-trading`. Get valid values from the [News Tags](../helper-list/tags) endpoint.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "holder_type",
+                    "description": "Filter by holder type (case-insensitive).",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "COMPANY_IPO_AND_LISTING_PERFORMANCE",
+            "name": "COMPANY_IPO_AND_LISTING_PERFORMANCE",
+            "description": "Company IPO & Listing Performance",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "IDX symbol symbol. E.g. `ARTO`, `BREN`, `GOTO`.",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "COMPANY_QUARTERLY_FINANCIALS",
+            "name": "COMPANY_QUARTERLY_FINANCIALS",
+            "description": "Company Quarterly Financials",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "IDX symbol symbol. E.g. `BMRI`, `BBCA`.",
+                    "type": "string"
+                },
+                {
+                    "name": "report_date",
+                    "description": "Specific report date (YYYY-MM-DD). Use the [Quarterly Financial Dates](../helper-list/company-quarterly-dates) endpoint to get valid values.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "approx",
+                    "description": "If `true` (default), use approximate quarter matching when an exact date is not found.",
+                    "type": "boolean",
+                    "optional": true
+                },
+                {
+                    "name": "n_quarters",
+                    "description": "Number of most recent quarters to return.",
+                    "type": "number",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "COMPANY_REPORT",
+            "name": "COMPANY_REPORT",
+            "description": "Company Report",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "IDX symbol symbol. E.g. `BREN`, `BBCA`.",
+                    "type": "string"
+                },
+                {
+                    "name": "sections",
+                    "description": "Comma-separated list of sections to include. Default: all. Options: `overview`, `valuation`, `future`, `peers`, `financials`, `dividend`, `management`, `ownership`.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "COMPANY_REVENUE_SEGMENTS",
+            "name": "COMPANY_REVENUE_SEGMENTS",
+            "description": "Company Revenue Segments",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "IDX symbol symbol. E.g. `BUMI`, `TLKM`. Not all companies have segment data — check the [Companies with Revenue Segments](../helper-list/companies-segments-list) helper first.",
+                    "type": "string"
+                },
+                {
+                    "name": "financial_year",
+                    "description": "Financial year to retrieve. Defaults to the latest available year.",
+                    "type": "number",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "CORPORATE_ACTIONS",
+            "name": "CORPORATE_ACTIONS",
+            "description": "Corporate Actions",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "IDX symbol. E.g. `BBCA`, `BMRI`.",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "DAILY_NET_FOREIGN_INFLOW",
+            "name": "DAILY_NET_FOREIGN_INFLOW",
+            "description": "Daily Net Foreign Inflow",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "IDX ticker symbol. E.g. `BBCA`, `GOTO`.",
+                    "type": "string"
+                },
+                {
+                    "name": "start",
+                    "description": "Start date (YYYY-MM-DD). Default: end - 30 days.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date (YYYY-MM-DD). Default: today.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "DAILY_TRANSACTION_DATA",
+            "name": "DAILY_TRANSACTION_DATA",
+            "description": "Daily Transaction Data",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "IDX symbol. E.g. `BBCA`, `GOTO`, `TLKM`.",
+                    "type": "string"
+                },
+                {
+                    "name": "start",
+                    "description": "Start date in `YYYY-MM-DD` format. Defaults to 30 days before `end`. Wider ranges are clamped to the most recent 90 days.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date in `YYYY-MM-DD` format. Defaults to today. Future dates return 400.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "FREE_FLOAT_MARKET_ANALYSIS",
+            "name": "FREE_FLOAT_MARKET_ANALYSIS",
+            "description": "Free Float Market Analysis",
+            "parameters": [
+                {
+                    "name": "sector",
+                    "description": "Kebab-case sector slug. E.g. `infrastructures`, `healthcare`, `transportation-logistic`. Retrieve valid values from the [Subsectors](./helper-list/subsectors) endpoint.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "sub_sector",
+                    "description": "Kebab-case subsector slug. E.g. `banks`, `basic-materials`, `food-beverage`. Retrieve valid values from the [Subsectors](./helper-list/subsectors) endpoint.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "industry",
+                    "description": "Kebab-case industry slug. E.g. `oil-gas`, `electrical`, `chemicals`. Retrieve valid values from the [Industries](./helper-list/industries) endpoint.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "sub_industry",
+                    "description": "Kebab-case sub-industry slug. E.g. `coal-production`, `gold`, `healthcare-providers`. Retrieve valid values from the [Subindustries](./helper-list/subindustries) endpoint.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "IDX_MARKET_SUMMARY",
+            "name": "IDX_MARKET_SUMMARY",
+            "description": "IDX Market Summary",
+            "parameters": [
+                {
+                    "name": "start",
+                    "description": "Start date in `YYYY-MM-DD` format. Earliest valid: `2021-01-01`. Defaults to 30 days before `end`. Wider ranges are clamped to the most recent 90 days.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date in `YYYY-MM-DD` format. Defaults to today. Future dates return 400.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "INDEX_DAILY_TRANSACTION_DATA",
+            "name": "INDEX_DAILY_TRANSACTION_DATA",
+            "description": "Index Daily Transaction Data",
+            "parameters": [
+                {
+                    "name": "index_code",
+                    "description": "Index code. E.g. `lq45`, `ihsg`, `idx30`.",
+                    "type": "string"
+                },
+                {
+                    "name": "start",
+                    "description": "Start date in `YYYY-MM-DD` format. Defaults to 30 days before `end`. Wider ranges are clamped to the most recent 90 days.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date in `YYYY-MM-DD` format. Defaults to today. Future dates return 400.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "INDUSTRIES",
+            "name": "INDUSTRIES",
+            "description": "Industries",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "KLSE_FULL_COMPANY_REPORT_FOR_A_KLSE_LISTED_SYMBOL",
+            "name": "KLSE_FULL_COMPANY_REPORT_FOR_A_KLSE_LISTED_SYMBOL",
+            "description": "Full company report for a KLSE-listed symbol",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "KLSE symbol symbol (4-digit numeric code). E.g. `1155`, `4197`.",
+                    "type": "string"
+                },
+                {
+                    "name": "sections",
+                    "description": "Comma-separated sections to include. Options: `overview`, `valuation`, `financials`, `dividend`. Default: all sections.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "KLSE_LIST_ALL_KLSE_SECTORS",
+            "name": "KLSE_LIST_ALL_KLSE_SECTORS",
+            "description": "List all KLSE sectors",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "KLSE_LIST_KLSE_COMPANIES_FILTERED_BY_SECTOR",
+            "name": "KLSE_LIST_KLSE_COMPANIES_FILTERED_BY_SECTOR",
+            "description": "List KLSE companies filtered by sector",
+            "parameters": [
+                {
+                    "name": "sector",
+                    "description": "Kebab-case sector slug. E.g. `financials`, `healthcare`. Get valid values from the [KLSE Sectors](../malaysia/klse-sectors) endpoint.",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "KLSE_TOP_KLSE_COMPANIES_BY_CLASSIFICATION",
+            "name": "KLSE_TOP_KLSE_COMPANIES_BY_CLASSIFICATION",
+            "description": "Top KLSE companies by classification",
+            "parameters": [
+                {
+                    "name": "sector",
+                    "description": "Filter by sector slug. E.g. `financials`, `healthcare`. Default: all sectors.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "n_stock",
+                    "description": "Number of top companies to return per classification. Max 10. Default: 5.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "classifications",
+                    "description": "Comma-separated list of classifications. Options: `dividend_yield`, `revenue`, `earnings`, `market_cap`, `pe`. Default: all.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "min_mcap_million",
+                    "description": "Minimum market cap in million MYR. Default: 1000.",
+                    "type": "number",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "MOST_TRADED_STOCKS",
+            "name": "MOST_TRADED_STOCKS",
+            "description": "Most Traded Stocks",
+            "parameters": [
+                {
+                    "name": "sub_sector",
+                    "description": "Filter by kebab-case subsector slug. E.g. `banks`. Get valid values from the [Subsectors](./helper-list/subsectors) endpoint.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "start",
+                    "description": "Start date in `YYYY-MM-DD` format. Defaults to 30 days before `end`. Wider ranges are clamped to the most recent 90 days.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date in `YYYY-MM-DD` format. Defaults to today. Future dates return 400.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "adjusted",
+                    "description": "If `true`, rank by volume × closing price instead of raw volume.",
+                    "type": "boolean",
+                    "optional": true
+                },
+                {
+                    "name": "n_stock",
+                    "description": "Number of tickers per day. Default 5, max 10.",
+                    "type": "number",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "NEWS_ARTICLES",
+            "name": "NEWS_ARTICLES",
+            "description": "News Articles",
+            "parameters": [
+                {
+                    "name": "sector",
+                    "description": "**IDX only.** Comma-separated sector slugs (kebab-case).",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "sub_sector",
+                    "description": "**IDX only.** Comma-separated subsector slugs (kebab-case).",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "commodity_type",
+                    "description": "**Mining only.** Filter by commodity type. E.g. `Coal`, `Nickel`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "start",
+                    "description": "Start date in `YYYY-MM-DD` format. Optional; if omitted, no lower bound is applied. Filters on `timestamp`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date in `YYYY-MM-DD` format. Optional; if omitted, no upper bound is applied. Future dates return 400.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "limit",
+                    "description": "Items per page. Max 30.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "offset",
+                    "description": "Items to skip for pagination.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "tags",
+                    "description": "**IDX only.** Comma-separated tag slugs. Get valid values from the [News Tags](../helper-list/tags) endpoint.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "extension",
+                    "description": "Data source. Default `idx`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "keyword",
+                    "description": "Case-insensitive substring match on article title. Works for both IDX and mining.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "symbols",
+                    "description": "**IDX only.** Comma-separated IDX symbols. E.g. `BBCA,BBRI`.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "NEWS_TAGS",
+            "name": "NEWS_TAGS",
+            "description": "News Tags",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "QUARTERLY_FINANCIAL_DATES",
+            "name": "QUARTERLY_FINANCIAL_DATES",
+            "description": "Quarterly Financial Dates",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "IDX symbol symbol. E.g. `ASII`, `BBCA`.",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "SGX_COMPANIES_SCREENER",
+            "name": "SGX_COMPANIES_SCREENER",
+            "description": "SGX Companies Screener",
+            "parameters": [
+                {
+                    "name": "where",
+                    "description": "SQL-like conditions for advanced filtering. Ignored if `q` is present. Supports operators `=`, `!=`, `>`, `>=`, `<`, `<=`, `like`, `in` combined with `and`/`or`. Use bracket notation for yearly fields: `revenue[2024] > 1000000000`. Supports arithmetic on both sides: `earnings[2024] / earnings[2023] > 1.25`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "q",
+                    "description": "A natural language query (e.g. `top 5 SGX banks by market cap`). When `q` is provided, all other query parameters (`where`, `order_by`, etc.) are ignored as the LLM will generate them.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "order_by",
+                    "description": "Field to sort results by. Use `-` prefix for descending order (e.g. `-market_cap`). Supports arithmetic expressions (e.g. `-(earnings[2024]/earnings[2023])`). Ignored if `q` is present.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "desc",
+                    "description": "Sort in descending order. Ignored if `q` is present.",
+                    "type": "boolean",
+                    "optional": true
+                },
+                {
+                    "name": "limit",
+                    "description": "Maximum number of results to return. Max: 200. Ignored if `q` is present.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "offset",
+                    "description": "Number of results to skip for pagination. Ignored if `q` is present.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "include_query_values",
+                    "description": "If `true`, the response includes a `query_values` object showing the field values used in filtering/sorting.",
+                    "type": "boolean",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "SGX_DAILY_PRICE_DATA",
+            "name": "SGX_DAILY_PRICE_DATA",
+            "description": "SGX Daily Price Data",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "SGX symbol. E.g. `D05`, `U11`.",
+                    "type": "string"
+                },
+                {
+                    "name": "start",
+                    "description": "Start date in `YYYY-MM-DD` format. Defaults to 30 days before `end`. Wider ranges are clamped to the most recent 90 days.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date in `YYYY-MM-DD` format. Defaults to today. Future dates return 400.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "SGX_FULL_COMPANY_REPORT_FOR_AN_SGX_LISTED_SYMBOL",
+            "name": "SGX_FULL_COMPANY_REPORT_FOR_AN_SGX_LISTED_SYMBOL",
+            "description": "Full company report for an SGX-listed symbol",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "SGX symbol symbol. E.g. `D05`, `U11`, `Z74`.",
+                    "type": "string"
+                },
+                {
+                    "name": "sections",
+                    "description": "Comma-separated sections to include. Options: `overview`, `valuation`, `financials`, `dividend`. Default: all sections.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "SGX_INSIDER_FILINGS",
+            "name": "SGX_INSIDER_FILINGS",
+            "description": "SGX Insider Filings",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "SGX symbol to filter by. E.g. `D05`, `U11`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "start",
+                    "description": "Start date in `YYYY-MM-DD` format. Optional; if omitted, no lower bound is applied. Filters on `timestamp`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date in `YYYY-MM-DD` format. Optional; if omitted, no upper bound is applied. Future dates return 400.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "limit",
+                    "description": "Number of results to return. Maximum: 30.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "offset",
+                    "description": "Number of results to skip for pagination.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "transaction_type",
+                    "description": "Filter by transaction type (case-insensitive).",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "holder_type",
+                    "description": "Filter by holder type (case-insensitive).",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "SGX_LIST_ALL_SGX_SECTORS",
+            "name": "SGX_LIST_ALL_SGX_SECTORS",
+            "description": "List all SGX sectors",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "SGX_NEWS",
+            "name": "SGX_NEWS",
+            "description": "SGX News",
+            "parameters": [
+                {
+                    "name": "sector",
+                    "description": "Filter by sector (case-insensitive).",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "sub_sector",
+                    "description": "Filter by sub-sector (case-insensitive).",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "start",
+                    "description": "Start date in `YYYY-MM-DD` format. Optional; if omitted, no lower bound is applied. Filters on `timestamp`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date in `YYYY-MM-DD` format. Optional; if omitted, no upper bound is applied. Future dates return 400.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "limit",
+                    "description": "Items per page. Max 30.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "offset",
+                    "description": "Number of items to skip.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "tags",
+                    "description": "Comma-separated tag slugs. Get values from [SGX Tags](../singapore/sgx-tags).",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "symbols",
+                    "description": "Comma-separated SGX symbols. E.g. `D05,U11`.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "SGX_NEWS_TAGS",
+            "name": "SGX_NEWS_TAGS",
+            "description": "SGX News Tags",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "SGX_SHARE_BUYBACKS",
+            "name": "SGX_SHARE_BUYBACKS",
+            "description": "SGX Share Buybacks",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "SGX symbol to filter by. E.g. `D05`, `U11`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "start",
+                    "description": "Start date in `YYYY-MM-DD` format. Optional; if omitted, no lower bound is applied. Filters on `purchase_date`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date in `YYYY-MM-DD` format. Optional; if omitted, no upper bound is applied. Future dates return 400.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "limit",
+                    "description": "Items per page. Max 30.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "offset",
+                    "description": "Number of items to skip.",
+                    "type": "number",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "SGX_SHORT_SELL",
+            "name": "SGX_SHORT_SELL",
+            "description": "SGX Short Sell",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "SGX symbol to filter by. E.g. `D05`, `U11`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "start",
+                    "description": "Start date in `YYYY-MM-DD` format. Optional; if omitted, no lower bound is applied. Filters on `date`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date in `YYYY-MM-DD` format. Optional; if omitted, no upper bound is applied. Future dates return 400.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "limit",
+                    "description": "Items per page. Max 30.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "offset",
+                    "description": "Number of items to skip.",
+                    "type": "number",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "SGX_TOP_SGX_COMPANIES_BY_CLASSIFICATION",
+            "name": "SGX_TOP_SGX_COMPANIES_BY_CLASSIFICATION",
+            "description": "Top SGX companies by classification",
+            "parameters": [
+                {
+                    "name": "sector",
+                    "description": "Filter by sector slug. E.g. `financial-services`, `technology`. Default: all sectors.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "n_stock",
+                    "description": "Number of top companies to return per classification. Max 10. Default: 5.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "classifications",
+                    "description": "Comma-separated list of classifications. Options: `dividend_yield`, `revenue`, `earnings`, `market_cap`, `pe`. Default: all.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "min_mcap_million",
+                    "description": "Minimum market cap in million SGD. Default: 1000.",
+                    "type": "number",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "SHAREHOLDERS_COMPOSITION",
+            "name": "SHAREHOLDERS_COMPOSITION",
+            "description": "Shareholders Composition",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "IDX symbol. E.g. `BBCA`, `BMRI`.",
+                    "type": "string"
+                },
+                {
+                    "name": "year",
+                    "description": "Calendar year (e.g. `2025`). Defaults to the current year. Data is available from 2021; earlier years return an empty `data` array. Future years are rejected.",
+                    "type": "number",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "STOCK_SUSPENSIONS",
+            "name": "STOCK_SUSPENSIONS",
+            "description": "Stock Suspensions",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "Optional filter by IDX symbol (case-insensitive). E.g. `BBCA`, `GOTO`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "start",
+                    "description": "Start date in `YYYY-MM-DD` format. Optional; if omitted, no lower bound is applied. Filters on `suspension_date`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date in `YYYY-MM-DD` format. Optional; if omitted, no upper bound is applied. Future dates return 400.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "limit",
+                    "description": "Items per page. Max 30.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "offset",
+                    "description": "Number of items to skip.",
+                    "type": "number",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "SUBINDUSTRIES",
+            "name": "SUBINDUSTRIES",
+            "description": "Subindustries",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "SUBSECTOR_REPORT",
+            "name": "SUBSECTOR_REPORT",
+            "description": "Subsector Report",
+            "parameters": [
+                {
+                    "name": "sub_sector",
+                    "description": "Kebab-case subsector slug. E.g. `banks`, `utilities`. Get valid values from the [Subsectors](./helper-list/subsectors) endpoint.",
+                    "type": "string"
+                },
+                {
+                    "name": "sections",
+                    "description": "Comma-separated sections to include. Default: all. Options: `statistics`, `market_cap`, `stability`, `valuation`, `growth`, `companies`.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "SUBSECTORS",
+            "name": "SUBSECTORS",
+            "description": "Subsectors",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "TOP_ACCUMULATIONS_AND_DISTRIBUTIONS_PER_BROKER",
+            "name": "TOP_ACCUMULATIONS_AND_DISTRIBUTIONS_PER_BROKER",
+            "description": "Top Accumulations and Distributions Per Broker",
+            "parameters": [
+                {
+                    "name": "broker_code",
+                    "description": "Broker code. E.g. `MG`, `AK`, `CC`.",
+                    "type": "string"
+                },
+                {
+                    "name": "start",
+                    "description": "Start date (YYYY-MM-DD). Default: end - 30 days.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date (YYYY-MM-DD). Default: today.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "n_brokers",
+                    "description": "How many accumulations and distributions to return each (default 10, max 100).",
+                    "type": "number",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "TOP_BROKERS_DAILY_RANKING",
+            "name": "TOP_BROKERS_DAILY_RANKING",
+            "description": "Top Brokers Daily Ranking",
+            "parameters": [
+                {
+                    "name": "cohort",
+                    "description": "Filter by broker cohort (case-insensitive). Default `all`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "date",
+                    "description": "Target date (YYYY-MM-DD). Default: latest available.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "metric",
+                    "description": "`gross` ranks by total buy + sell value; `net` ranks by absolute net flow. Default `gross`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "n_brokers",
+                    "description": "How many brokers to return. Default: all matching (typically ~80). Max 200.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "origin",
+                    "description": "Filter by broker origin. Default `all`.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "TOP_BUYERS_AND_SELLERS_PER_SYMBOL",
+            "name": "TOP_BUYERS_AND_SELLERS_PER_SYMBOL",
+            "description": "Top Buyers and Sellers Per Symbol",
+            "parameters": [
+                {
+                    "name": "symbol",
+                    "description": "IDX ticker symbol. E.g. `BBCA`, `GOTO`.",
+                    "type": "string"
+                },
+                {
+                    "name": "start",
+                    "description": "Start date (YYYY-MM-DD). Default: end - 30 days.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "end",
+                    "description": "End date (YYYY-MM-DD). Default: today.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "cohort",
+                    "description": "Filter brokers by cohort (case-insensitive). Default `all`.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "n_brokers",
+                    "description": "How many buyers and sellers to return each (default 10, max 100).",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "origin",
+                    "description": "Filter brokers by origin. Default `all`.",
+                    "type": "string",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "id": "TOP_COMPANY_MOVERS",
+            "name": "TOP_COMPANY_MOVERS",
+            "description": "Top Company Movers",
+            "parameters": [
+                {
+                    "name": "sub_sector",
+                    "description": "Filter by kebab-case subsector slug. E.g. `banks`. Get valid values from the [Subsectors](./helper-list/subsectors) endpoint.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "n_stock",
+                    "description": "Number of companies per period. Default 5, max 10.",
+                    "type": "number",
+                    "optional": true
+                },
+                {
+                    "name": "classifications",
+                    "description": "Comma-separated. Choices: `top_gainers`, `top_losers`. Default: both.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "periods",
+                    "description": "Comma-separated periods. Choices: `1d`, `7d`, `14d`, `30d`, `365d`. Default: all.",
+                    "type": "string",
+                    "optional": true
+                },
+                {
+                    "name": "min_mcap_billion",
+                    "description": "Minimum market cap filter in billion IDR. Default 5000.",
+                    "type": "number",
+                    "optional": true
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
             "id": "SCREEN",
             "name": "SCREEN",
+            "description": "Screen IDX companies using SQL-like filters",
             "parameters": [
                 {
-                    "description": "SQL-like filter (e.g. \"sub_sector = 'banks' and pe_ttm < 15\").",
                     "name": "where",
+                    "description": "SQL-like filter expression. E.g. `sub_sector = 'banks' and pe_ttm < 15`.",
                     "type": "string"
                 },
                 {
-                    "description": "Sort field with optional \"-\" prefix for desc (e.g. \"-market_cap\").",
-                    "name": "orderBy",
-                    "optional": true,
-                    "type": "string"
+                    "name": "order_by",
+                    "description": "Sort field with optional `-` prefix for descending. E.g. `-market_cap`.",
+                    "type": "string",
+                    "optional": true
                 },
                 {
-                    "description": "Max results (default 50, max 200).",
                     "name": "limit",
-                    "optional": true,
-                    "type": "number"
+                    "description": "Max results (default 50, max 200).",
+                    "type": "number",
+                    "optional": true
                 }
             ],
             "result": {
@@ -31,14 +1363,13 @@
             }
         },
         {
-            "description": "Screen IDX companies using natural language.",
-            "helpUrl": "https://sectors.app/api",
             "id": "SCREEN_NL",
             "name": "SCREEN_NL",
+            "description": "Screen IDX companies using a natural-language query",
             "parameters": [
                 {
-                    "description": "Plain English query (e.g. \"top 10 banks by market cap\").",
-                    "name": "query",
+                    "name": "q",
+                    "description": "Plain-English query. E.g. `top 10 banks by market cap`.",
                     "type": "string"
                 }
             ],
@@ -48,620 +1379,21 @@
             }
         },
         {
-            "description": "Get free float percentage for companies.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "FREE_FLOAT",
-            "name": "FREE_FLOAT",
-            "parameters": [
-                {
-                    "description": "Filter by subsector (e.g. \"banks\").",
-                    "name": "subSector",
-                    "optional": true,
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get company overview: market cap, sector, ESG, price, listing info.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "COMPANY_OVERVIEW",
-            "name": "COMPANY_OVERVIEW",
-            "parameters": [
-                {
-                    "description": "IDX ticker (e.g. \"BBCA\").",
-                    "name": "ticker",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get company valuation: PE, PB, PS, PCF ratios over time.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "COMPANY_VALUATION",
-            "name": "COMPANY_VALUATION",
-            "parameters": [
-                {
-                    "description": "IDX ticker (e.g. \"BBCA\").",
-                    "name": "ticker",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get company financials: income stmt, balance sheet, ratios by year.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "COMPANY_FINANCIALS",
-            "name": "COMPANY_FINANCIALS",
-            "parameters": [
-                {
-                    "description": "IDX ticker (e.g. \"BBCA\").",
-                    "name": "ticker",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get company dividend history, yield, and payout ratio.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "COMPANY_DIVIDEND",
-            "name": "COMPANY_DIVIDEND",
-            "parameters": [
-                {
-                    "description": "IDX ticker (e.g. \"BBCA\").",
-                    "name": "ticker",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get company major shareholders and institutional transaction flow.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "COMPANY_OWNERSHIP",
-            "name": "COMPANY_OWNERSHIP",
-            "parameters": [
-                {
-                    "description": "IDX ticker (e.g. \"BBCA\").",
-                    "name": "ticker",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get subsector statistics: company count, PE distribution.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "SUBSECTOR_STATISTICS",
-            "name": "SUBSECTOR_STATISTICS",
-            "parameters": [
-                {
-                    "description": "Subsector slug (e.g. \"banks\").",
-                    "name": "subSector",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get subsector market cap data and performance.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "SUBSECTOR_MARKET_CAP",
-            "name": "SUBSECTOR_MARKET_CAP",
-            "parameters": [
-                {
-                    "description": "Subsector slug (e.g. \"banks\").",
-                    "name": "subSector",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get subsector valuation: historical PE/PB/PS/PCF with percentile rank.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "SUBSECTOR_VALUATION",
-            "name": "SUBSECTOR_VALUATION",
-            "parameters": [
-                {
-                    "description": "Subsector slug (e.g. \"banks\").",
-                    "name": "subSector",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get subsector growth metrics and forecasts.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "SUBSECTOR_GROWTH",
-            "name": "SUBSECTOR_GROWTH",
-            "parameters": [
-                {
-                    "description": "Subsector slug (e.g. \"banks\").",
-                    "name": "subSector",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get quarterly financial statements for a company.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "QUARTERLY_FINANCIALS",
-            "name": "QUARTERLY_FINANCIALS",
-            "parameters": [
-                {
-                    "description": "IDX ticker (e.g. \"BBCA\").",
-                    "name": "ticker",
-                    "type": "string"
-                },
-                {
-                    "description": "Number of recent quarters to retrieve.",
-                    "name": "nQuarters",
-                    "optional": true,
-                    "type": "number"
-                },
-                {
-                    "description": "Specific report date (YYYY-MM-DD).",
-                    "name": "reportDate",
-                    "optional": true,
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get revenue/cost breakdown by business segment.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "COMPANY_SEGMENTS",
-            "name": "COMPANY_SEGMENTS",
-            "parameters": [
-                {
-                    "description": "IDX ticker (e.g. \"ASII\").",
-                    "name": "ticker",
-                    "type": "string"
-                },
-                {
-                    "description": "Year (defaults to latest).",
-                    "name": "financialYear",
-                    "optional": true,
-                    "type": "number"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get daily close price, volume, and market cap for a ticker.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "DAILY_PRICE",
-            "name": "DAILY_PRICE",
-            "parameters": [
-                {
-                    "description": "IDX ticker (e.g. \"BBCA\").",
-                    "name": "ticker",
-                    "type": "string"
-                },
-                {
-                    "description": "Start date (YYYY-MM-DD).",
-                    "name": "start",
-                    "optional": true,
-                    "type": "string"
-                },
-                {
-                    "description": "End date (YYYY-MM-DD).",
-                    "name": "end",
-                    "optional": true,
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get IDX total market capitalization over time.",
-            "helpUrl": "https://sectors.app/api",
             "id": "IDX_MARKET_CAP",
             "name": "IDX_MARKET_CAP",
+            "description": "Total IDX market capitalisation over time",
             "parameters": [
                 {
-                    "description": "Start date (YYYY-MM-DD).",
                     "name": "start",
-                    "optional": true,
-                    "type": "string"
-                },
-                {
-                    "description": "End date (YYYY-MM-DD).",
-                    "name": "end",
-                    "optional": true,
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get daily closing prices for a stock index.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "INDEX_DAILY",
-            "name": "INDEX_DAILY",
-            "parameters": [
-                {
-                    "description": "Index code (e.g. \"ihsg\", \"lq45\", \"idx30\").",
-                    "name": "indexCode",
-                    "type": "string"
-                },
-                {
                     "description": "Start date (YYYY-MM-DD).",
-                    "name": "start",
-                    "optional": true,
-                    "type": "string"
+                    "type": "string",
+                    "optional": true
                 },
                 {
-                    "description": "End date (YYYY-MM-DD).",
                     "name": "end",
-                    "optional": true,
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get most traded stocks by volume in a date range.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "MOST_TRADED",
-            "name": "MOST_TRADED",
-            "parameters": [
-                {
-                    "description": "Start date (YYYY-MM-DD).",
-                    "name": "start",
-                    "optional": true,
-                    "type": "string"
-                },
-                {
                     "description": "End date (YYYY-MM-DD).",
-                    "name": "end",
-                    "optional": true,
-                    "type": "string"
-                },
-                {
-                    "description": "Number of stocks (default 5, max 10).",
-                    "name": "nStock",
-                    "optional": true,
-                    "type": "number"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get top stock price movers (gainers and losers).",
-            "helpUrl": "https://sectors.app/api",
-            "id": "TOP_MOVERS",
-            "name": "TOP_MOVERS",
-            "parameters": [
-                {
-                    "description": "\"top_gainers\", \"top_losers\", or both.",
-                    "name": "classifications",
-                    "optional": true,
-                    "type": "string"
-                },
-                {
-                    "description": "\"1d\", \"7d\", \"14d\", \"30d\", \"365d\".",
-                    "name": "periods",
-                    "optional": true,
-                    "type": "string"
-                },
-                {
-                    "description": "Number of stocks (default 5, max 10).",
-                    "name": "nStock",
-                    "optional": true,
-                    "type": "number"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get stock price performance since IPO listing.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "IPO_PERFORMANCE",
-            "name": "IPO_PERFORMANCE",
-            "parameters": [
-                {
-                    "description": "IDX ticker (e.g. \"GOTO\").",
-                    "name": "ticker",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get available KLSE sectors.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "KLSE_SECTORS",
-            "name": "KLSE_SECTORS",
-            "parameters": [],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get KLSE companies in a sector.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "KLSE_COMPANIES",
-            "name": "KLSE_COMPANIES",
-            "parameters": [
-                {
-                    "description": "KLSE sector slug (e.g. \"financials\").",
-                    "name": "sector",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get top KLSE companies by a classification metric.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "KLSE_TOP_COMPANIES",
-            "name": "KLSE_TOP_COMPANIES",
-            "parameters": [
-                {
-                    "description": "\"dividend_yield\",\"revenue\",\"earnings\",\"market_cap\",\"pe\".",
-                    "name": "classifications",
-                    "optional": true,
-                    "type": "string"
-                },
-                {
-                    "description": "KLSE sector slug.",
-                    "name": "sector",
-                    "optional": true,
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get KLSE company overview: market cap, sector, price changes.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "KLSE_OVERVIEW",
-            "name": "KLSE_OVERVIEW",
-            "parameters": [
-                {
-                    "description": "KLSE ticker (e.g. \"1155\").",
-                    "name": "ticker",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get KLSE company valuation ratios.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "KLSE_VALUATION",
-            "name": "KLSE_VALUATION",
-            "parameters": [
-                {
-                    "description": "KLSE ticker (e.g. \"1155\").",
-                    "name": "ticker",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get KLSE company financial data: earnings, revenue, ratios.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "KLSE_FINANCIALS",
-            "name": "KLSE_FINANCIALS",
-            "parameters": [
-                {
-                    "description": "KLSE ticker (e.g. \"1155\").",
-                    "name": "ticker",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get KLSE company dividend data.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "KLSE_DIVIDEND",
-            "name": "KLSE_DIVIDEND",
-            "parameters": [
-                {
-                    "description": "KLSE ticker (e.g. \"1155\").",
-                    "name": "ticker",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get available SGX sectors.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "SGX_SECTORS",
-            "name": "SGX_SECTORS",
-            "parameters": [],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get SGX companies in a sector.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "SGX_COMPANIES",
-            "name": "SGX_COMPANIES",
-            "parameters": [
-                {
-                    "description": "SGX sector slug (e.g. \"financial-services\").",
-                    "name": "sector",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get top SGX companies by a classification metric.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "SGX_TOP_COMPANIES",
-            "name": "SGX_TOP_COMPANIES",
-            "parameters": [
-                {
-                    "description": "\"dividend_yield\",\"revenue\",\"earnings\",\"market_cap\",\"pe\".",
-                    "name": "classifications",
-                    "optional": true,
-                    "type": "string"
-                },
-                {
-                    "description": "SGX sector slug.",
-                    "name": "sector",
-                    "optional": true,
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get SGX company overview: market cap, sector, multi-period price changes.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "SGX_OVERVIEW",
-            "name": "SGX_OVERVIEW",
-            "parameters": [
-                {
-                    "description": "SGX ticker (e.g. \"D05\").",
-                    "name": "ticker",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get SGX company valuation ratios.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "SGX_VALUATION",
-            "name": "SGX_VALUATION",
-            "parameters": [
-                {
-                    "description": "SGX ticker (e.g. \"D05\").",
-                    "name": "ticker",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get SGX company financial data with income stmt and balance sheet.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "SGX_FINANCIALS",
-            "name": "SGX_FINANCIALS",
-            "parameters": [
-                {
-                    "description": "SGX ticker (e.g. \"D05\").",
-                    "name": "ticker",
-                    "type": "string"
-                }
-            ],
-            "result": {
-                "dimensionality": "matrix",
-                "type": "string"
-            }
-        },
-        {
-            "description": "Get SGX company dividend data with full history.",
-            "helpUrl": "https://sectors.app/api",
-            "id": "SGX_DIVIDEND",
-            "name": "SGX_DIVIDEND",
-            "parameters": [
-                {
-                    "description": "SGX ticker (e.g. \"D05\").",
-                    "name": "ticker",
-                    "type": "string"
+                    "type": "string",
+                    "optional": true
                 }
             ],
             "result": {

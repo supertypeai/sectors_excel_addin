@@ -1,2 +1,1 @@
-Office.onReady(function(){}),Office.actions.associate("action",function(e){var i={type:Office.MailboxEnums.ItemNotificationMessageType.InformationalMessage,message:"Performed action.",icon:"Icon.80x80",persistent:!0};Office.context.mailbox.item.notificationMessages.replaceAsync("action",i),e.completed()});
-//# sourceMappingURL=commands.js.map
+Office.onReady(()=>{});function o(i){var e;const t={type:Office.MailboxEnums.ItemNotificationMessageType.InformationalMessage,message:"Performed action.",icon:"Icon.80x80",persistent:!0};(e=Office.context.mailbox.item)==null||e.notificationMessages.replaceAsync("action",t),i.completed()}Office.actions.associate("action",o);
