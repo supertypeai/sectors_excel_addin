@@ -30,7 +30,7 @@
     </section>
     <main id="app-body" class="ms-welcome__main" style="display: none;">
         <h2 class="ms-font-xl">Welcome to Sectors Financial</h2>
-        <p class="ms-font-m app-description">Pull real-time IDX, SGX and KLSE stock data, financials, valuations, dividends, broker flow, mining data, and more directly into your Excel spreadsheet using <strong>SECTORS.*</strong> custom functions.</p>
+        <p class="ms-font-m app-description">Pull real-time IDX, SGX and KLSE stock data, financials, valuations, dividends, broker flow, mining data, and more directly into your Excel spreadsheet using <strong><span class="fn-ns">SECTORS</span>.*</strong> custom functions.</p>
 
         <div class="key-card">
             <p class="ms-font-s" style="margin-bottom: 8px;">
@@ -53,6 +53,14 @@
             <p class="ms-font-s current-key">Current key: <span id="current-key-value">Not set</span></p>
             <p id="api-key-status" class="ms-font-s status-message" aria-live="polite"></p>
         </div>
+
+        <section class="catalog" aria-labelledby="catalog-title">
+            <h2 id="catalog-title" class="ms-font-xl">Functions</h2>
+            <p class="ms-font-s catalog-hint">Pick a function, edit the example, then insert it into the selected cell. Optional inputs are shown in [brackets].</p>
+            <input id="fn-search" class="api-key-input" type="search" placeholder="Search functions, e.g. dividend, broker, SGX" autocomplete="off" />
+            <p id="fn-status" class="ms-font-s status-message" aria-live="polite"></p>
+            <div id="fn-list"></div>
+        </section>
 
         <div style="margin-top: 16px; padding: 12px; background: #f3f2f1; border-radius: 4px;">
             <p class="ms-font-s" style="margin: 0;"><strong>Enterprise / Team access:</strong> Visit <a href="https://sectors.app/auth" target="_blank">sectors.app/api</a> or email <a href="mailto:sectors@supertype.ai">sectors@supertype.ai</a> to inquire about team plans and enterprise pricing.</p>

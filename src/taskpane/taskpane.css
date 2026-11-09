@@ -113,6 +113,77 @@
     color: #a4262c;
 }
  
+.catalog {
+    width: 100%;
+    margin-top: 16px;
+}
+
+.catalog-hint {
+    margin: 0 0 4px;
+    color: #605e5c;
+}
+
+#fn-search {
+    margin-bottom: 4px;
+}
+
+.fn-group {
+    border-bottom: 1px solid #edebe9;
+}
+
+.fn-group-title {
+    padding: 10px 0;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.fn-item {
+    margin: 0 0 6px 12px;
+}
+
+.fn-item > summary {
+    padding: 4px 0;
+    cursor: pointer;
+}
+
+.fn-name {
+    font-family: Consolas, monospace;
+    font-weight: 600;
+}
+
+.fn-desc {
+    display: block;
+    margin-left: 16px;
+    color: #605e5c;
+    font-size: 12px;
+}
+
+.fn-params {
+    margin: 6px 0 8px 16px;
+    font-size: 12px;
+    list-style: none;
+}
+
+.fn-params li {
+    margin-bottom: 4px;
+}
+
+.fn-insert {
+    display: flex;
+    gap: 8px;
+    margin-left: 16px;
+}
+
+.fn-formula {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 8px;
+    border: 1px solid #bfbfbf;
+    border-radius: 4px;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+}
+
 .ms-Button.ms-Button--hero .ms-Button-label {
   color: #0078d7;
 }

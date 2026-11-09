@@ -2302,7 +2302,7 @@
             "name": "MINING_COMPANY",
             "parameters": [
                 {
-                    "description": "Company slug (from MINING_COMPANIES).",
+                    "description": "Company slug from MINING_COMPANIES (e.g. \"pt-adaro-andalan-indonesia-tbk\").",
                     "name": "slug",
                     "type": "string"
                 }
@@ -2319,7 +2319,7 @@
             "name": "MINING_COMPANY_FINANCIALS",
             "parameters": [
                 {
-                    "description": "Company slug.",
+                    "description": "Company slug (e.g. \"pt-adaro-andalan-indonesia-tbk\").",
                     "name": "slug",
                     "type": "string"
                 },
@@ -2342,7 +2342,7 @@
             "name": "MINING_COMPANY_OWNERSHIP",
             "parameters": [
                 {
-                    "description": "Company slug.",
+                    "description": "Company slug (e.g. \"pt-adaro-andalan-indonesia-tbk\").",
                     "name": "slug",
                     "type": "string"
                 }
@@ -2359,7 +2359,7 @@
             "name": "MINING_COMPANY_PERFORMANCE",
             "parameters": [
                 {
-                    "description": "Company slug.",
+                    "description": "Company slug (e.g. \"pt-adaro-andalan-indonesia-tbk\").",
                     "name": "slug",
                     "type": "string"
                 },
@@ -2388,7 +2388,7 @@
             "name": "MINING_SALES_DESTINATION",
             "parameters": [
                 {
-                    "description": "Company slug.",
+                    "description": "Company slug (e.g. \"pt-adaro-andalan-indonesia-tbk\").",
                     "name": "slug",
                     "type": "string"
                 },
@@ -2435,7 +2435,7 @@
             "name": "MINING_EXPORTS",
             "parameters": [
                 {
-                    "description": "\"Coal\", \"Copper\" or \"Gold\".",
+                    "description": "\"Coal\", \"Copper\" or \"Gold\" (e.g. \"Coal\").",
                     "name": "commodityType",
                     "type": "string"
                 },
@@ -2493,7 +2493,7 @@
             "name": "MINING_TOTAL_PRODUCTION",
             "parameters": [
                 {
-                    "description": "\"Coal\", \"Copper\", \"Gold\" or \"Nickel\".",
+                    "description": "\"Coal\", \"Copper\", \"Gold\" or \"Nickel\" (e.g. \"Coal\").",
                     "name": "commodityType",
                     "type": "string"
                 }
@@ -2636,7 +2636,7 @@
             "name": "MINING_LICENSE_AUCTION",
             "parameters": [
                 {
-                    "description": "WIUP code of the auction.",
+                    "description": "WIUP code from MINING_LICENSE_AUCTIONS (e.g. \"1752072062023002\").",
                     "name": "wiupCode",
                     "type": "string"
                 }
@@ -2713,7 +2713,7 @@
             "name": "MINING_SITE",
             "parameters": [
                 {
-                    "description": "Site slug (from MINING_SITES).",
+                    "description": "Site slug from MINING_SITES (e.g. \"batubara-benhes-3\").",
                     "name": "slug",
                     "type": "string"
                 }

@@ -2262,7 +2262,7 @@ async function MINING_COMPANIES(commodityType, keyword, companyType, hasFinancia
  * Get a mining company's profile and licenses.
  * @customfunction
  * @helpurl https://sectors.app/api
- * @param {string} slug Company slug (from MINING_COMPANIES).
+ * @param {string} slug Company slug from MINING_COMPANIES (e.g. "pt-adaro-andalan-indonesia-tbk").
  * @returns {string[][]} Profile, then licenses and contracts.
  */
 async function MINING_COMPANY(slug) {
@@ -2283,7 +2283,7 @@ async function MINING_COMPANY(slug) {
  * Get a mining company's financials (USD) for a year.
  * @customfunction
  * @helpurl https://sectors.app/api
- * @param {string} slug Company slug.
+ * @param {string} slug Company slug (e.g. "pt-adaro-andalan-indonesia-tbk").
  * @param {number} [year] Year (default latest).
  * @returns {string[][]} Key-value financials.
  */
@@ -2298,7 +2298,7 @@ async function MINING_COMPANY_FINANCIALS(slug, year) {
  * Get a mining company's parent companies and subsidiaries.
  * @customfunction
  * @helpurl https://sectors.app/api
- * @param {string} slug Company slug.
+ * @param {string} slug Company slug (e.g. "pt-adaro-andalan-indonesia-tbk").
  * @returns {string[][]} Ownership tables.
  */
 async function MINING_COMPANY_OWNERSHIP(slug) {
@@ -2315,7 +2315,7 @@ async function MINING_COMPANY_OWNERSHIP(slug) {
  * Get a mining company's production, sales, strip ratio and reserves by commodity.
  * @customfunction
  * @helpurl https://sectors.app/api
- * @param {string} slug Company slug.
+ * @param {string} slug Company slug (e.g. "pt-adaro-andalan-indonesia-tbk").
  * @param {string} [commodityType] e.g. "Coal", "Nickel".
  * @param {number} [year] Year (default latest).
  * @returns {string[][]} Performance table.
@@ -2338,7 +2338,7 @@ async function MINING_COMPANY_PERFORMANCE(slug, commodityType, year) {
  * Get a mining company's sales by destination country.
  * @customfunction
  * @helpurl https://sectors.app/api
- * @param {string} slug Company slug.
+ * @param {string} slug Company slug (e.g. "pt-adaro-andalan-indonesia-tbk").
  * @param {number} [year] Year (default latest).
  * @returns {string[][]} Sales destinations.
  */
@@ -2365,7 +2365,7 @@ async function MINING_CONTRACTS(contractor, mineOwner) {
  * Get Indonesia's top export destinations for a commodity.
  * @customfunction
  * @helpurl https://sectors.app/api
- * @param {string} commodityType "Coal", "Copper" or "Gold".
+ * @param {string} commodityType "Coal", "Copper" or "Gold" (e.g. "Coal").
  * @param {number} year Year (e.g. 2024).
  * @param {number} [limit] Countries to return (default 20, max 30).
  * @returns {string[][]} Export destinations.
@@ -2396,7 +2396,7 @@ async function MINING_GLOBAL_COMMODITY(commodityType, country, limit) {
  * Get Indonesia's total yearly production for a commodity.
  * @customfunction
  * @helpurl https://sectors.app/api
- * @param {string} commodityType "Coal", "Copper", "Gold" or "Nickel".
+ * @param {string} commodityType "Coal", "Copper", "Gold" or "Nickel" (e.g. "Coal").
  * @returns {string[][]} Production by year.
  */
 async function MINING_TOTAL_PRODUCTION(commodityType) {
@@ -2479,7 +2479,7 @@ async function MINING_LICENSE_AUCTIONS(province, commodityType, participant, sta
  * Get one mining license auction with its phases and participants.
  * @customfunction
  * @helpurl https://sectors.app/api
- * @param {string} wiupCode WIUP code of the auction.
+ * @param {string} wiupCode WIUP code from MINING_LICENSE_AUCTIONS (e.g. "1752072062023002").
  * @returns {string[][]} Auction detail.
  */
 async function MINING_LICENSE_AUCTION(wiupCode) {
@@ -2530,7 +2530,7 @@ async function MINING_SITES(province, commodityType, company, year, orderBy, min
  * Get one mining site's detail, reserves and location.
  * @customfunction
  * @helpurl https://sectors.app/api
- * @param {string} slug Site slug (from MINING_SITES).
+ * @param {string} slug Site slug from MINING_SITES (e.g. "batubara-benhes-3").
  * @returns {string[][]} Key-value site detail.
  */
 async function MINING_SITE(slug) {
