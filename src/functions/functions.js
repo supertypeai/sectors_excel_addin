@@ -32,8 +32,9 @@ async function apiFetch(endpoint, params = {}) {
 
   if (res.status === 429) throw new Error("Rate limit exceeded. Please wait.");
   if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.message || body.error || body.detail || `HTTP ${res.status}`);
+    const body = await res.json().catch(() => null);
+    if (!body && IS_LOCAL) throw new Error(`HTTP ${res.status}: restart the dev server (npm start) to load the API proxy.`);
+    throw new Error(body?.message || body?.error || body?.detail || body?.details || `HTTP ${res.status}`);
   }
   return res.json();
 }
