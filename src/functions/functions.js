@@ -2386,9 +2386,10 @@ async function MINING_EXPORTS(commodityType, year, limit) {
  * @returns {string[][]} Global commodity data.
  */
 async function MINING_GLOBAL_COMMODITY(commodityType, country, limit) {
-  return run(async () =>
-    autoTable(await apiFetch("/mining/global-commodity/", { commodity_type: commodityType, country, limit }))
-  );
+  return run(async () => {
+    if (!commodityType && !country) throw new Error("Provide a commodityType or a country.");
+    return autoTable(await apiFetch("/mining/global-commodity/", { commodity_type: commodityType, country, limit }));
+  });
 }
 
 /**
