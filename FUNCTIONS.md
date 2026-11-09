@@ -1,310 +1,225 @@
-# Sectors Financial — Excel Add-in Function Implementation Guide
+# Sectors Financial — Excel Add-in Function Reference
 
-This guide documents the custom functions currently implemented in Sectors Excel Add In functions, using Sectors API v2 endpoints.
+The add-in exposes **104 custom functions** covering every `GET` endpoint in Sectors API v2 (`schema.json`, API version 2.0.0): IDX, KLSE, SGX (including REITs), brokers, and Indonesian mining.
 
-## Part 1: Custom Function Catalog
-
-Namespace prefix: `SECTORS.`
-
-Example:
+Namespace prefix: `SECTORS.` (dev manifest) or `SECTORSPROD.` (prod manifest).
 
 ```excel
 =SECTORS.COMPANY_OVERVIEW("BBCA")
 ```
 
-### Design Principles
+## Conventions
 
-- Returns tabular output suitable for Excel spill ranges
-- Focuses on analyst workflows: screening, valuation, financial modeling, and market monitoring
-- Handles API failures gracefully by returning `[["Error", "..."]]`
-
-### Runtime Behavior and Error Cases
-
-- API key is required. If missing, functions return `[["Error", "No API key. Open the Sectors task pane and save your API key first."]]`.
-- API rate limit (`HTTP 429`) is surfaced as `[["Error", "Rate limit exceeded. Please wait."]]`.
-- All functions return 2D string arrays after sanitization (rows are normalized for Excel spill compatibility).
-
-### API Base URL Used in Current Code
-
-- Current implementation uses the direct API base URL:
-  - `https://api.sectors.app/v2`
-
-### Parameter Conventions
-
-- Dates: `YYYY-MM-DD`
-- Omitted optional parameter: leave blank in Excel, for example `=SECTORS.QUARTERLY_FINANCIALS("BBCA",, "2024-12-31")`
-- `ticker` values are market-specific:
-  - IDX examples: `BBCA`, `GOTO`
-  - KLSE examples: `1155`
-  - SGX examples: `D05`
+- **API key**: open the Sectors task pane, paste your key, click **Save Key**. Without it every function returns `Error | No API key...`.
+- **Output**: every function spills a rectangular 2-D range. Errors spill as `Error | <message>` (for example `Rate limit exceeded. Please wait.` on HTTP 429).
+- **Types**: numbers stay numeric (numeric strings from the API such as `"0.7315"` are converted), `YYYY-MM-DD` dates become Excel date serials (format the cells as dates), lists (tags, indices) are joined with `, `.
+- **Optional parameters**: leave blank, e.g. `=SECTORS.QUARTERLY_FINANCIALS("BBCA",, "2024-12-31")`.
+- **Booleans**: pass `TRUE`/`FALSE`.
+- **Comma-separated lists** (classifications, periods, tags, symbols): pass one string, e.g. `"top_gainers,top_losers"`.
+- **Pagination**: list endpoints with `limit`/`offset` return one page per call (max 30 for most, 200 for screeners). Each call costs API credits, so the add-in never auto-paginates.
+- **Tickers**: IDX `BBCA`, KLSE `1155`, SGX `D05`. The `.JK`/`.SI` suffix is optional.
+- **Sections** (`Title` row followed by a header row) are used where one response holds several differently-shaped lists, e.g. corporate actions.
 
 ---
 
-### 1. API Key Management
+## 1. Screeners (IDX)
 
-| # | Excel Function | Purpose |
+| Function | Endpoint | Returns |
 |---|---|---|
-| 1 | Task Pane (Sectors API) | Save API key in workbook settings |
-
-How to use:
-
-1. Open the Sectors task pane.
-2. Enter API key.
-3. Click Save Key.
-
----
-
-### 2. Companies Screener (IDX)
-
-| # | Excel Function | Endpoint | Key Parameters | Real Usage |
-|---|---|---|---|---|
-| 2 | `SECTORS.SCREEN` | `GET /v2/companies/` | `where`, `order_by`, `limit` | SQL-like filtering on financial metrics |
-| 3 | `SECTORS.SCREEN_NL` | `GET /v2/companies/` | `q` | Natural-language stock screening |
-| 4 | `SECTORS.FREE_FLOAT` | `GET /v2/free-float/` | `[sub_sector]` | Liquidity and ownership-quality analysis |
-
-Examples:
+| `SCREEN(where, [orderBy], [limit], [offset])` | `/v2/companies/` | `Symbol`, `Company Name`, plus one column per field used in `where`/`orderBy` |
+| `SCREEN_NL(query)` | `/v2/companies/?q=` | Same as `SCREEN`, fields chosen by the natural-language translation |
+| `FREE_FLOAT([subSector], [sector], [industry], [subIndustry])` | `/v2/free-float/` | `Symbol`, `Company Name`, `Free Float %` (fraction). Use at most one filter |
 
 ```excel
-=SECTORS.SCREEN("sub_sector = 'banks' and pe_ttm < 15", "-market_cap", 10)
+=SECTORS.SCREEN("sub_sector = 'banks' and free_float > 0.3", "-market_cap", 20)
 =SECTORS.SCREEN_NL("top 5 companies by dividend yield in financials sector")
-=SECTORS.FREE_FLOAT("banks")
+=SECTORS.FREE_FLOAT(, , "oil-gas")
 ```
 
----
+`free_float` is a screener field, so `SCREEN` can filter and sort on it and shows its value as a column.
 
-### 3. Company Report by Section (IDX)
+## 2. Company Report (IDX)
 
-Endpoint pattern: `GET /v2/company/report/{ticker}/?sections=<section>`
+All read `/v2/company/report/{ticker}/?sections=<section>`.
 
-| # | Excel Function | Section | Real Usage |
-|---|---|---|---|
-| 5 | `SECTORS.COMPANY_OVERVIEW` | `overview` | Snapshot of sector, listing, price, ESG |
-| 6 | `SECTORS.COMPANY_VALUATION` | `valuation` | Historical valuation metrics |
-| 7 | `SECTORS.COMPANY_FINANCIALS` | `financials` | Core statement and cash flow history |
-| 8 | `SECTORS.COMPANY_DIVIDEND` | `dividend` | Yield and payout analysis |
-| 9 | `SECTORS.COMPANY_OWNERSHIP` | `ownership` | Major shareholders and stake composition |
+| Function | Section | Returns |
+|---|---|---|
+| `COMPANY_OVERVIEW(ticker)` | overview | Key-value: sector/industry, market cap & rank, price, listing, ESG, contact, indices, tags, 52W/YTD/all-time high & low |
+| `COMPANY_VALUATION(ticker)` | valuation | Forward PE, intrinsic value; yearly PE/PB/PS/PCF/PEG/EV multiples with peer averages |
+| `COMPANY_FINANCIALS(ticker)` | financials | EPS and YoY growth; yearly income statement, balance sheet and cash flow |
+| `COMPANY_FINANCIAL_RATIOS(ticker)` | financials | Yearly profitability, leverage, liquidity, efficiency and capital ratios |
+| `COMPANY_DIVIDEND(ticker)` | dividend | Yield/payout metrics; yearly totals; upcoming dividends if any |
+| `COMPANY_OWNERSHIP(ticker)` | ownership | Major shareholders |
+| `COMPANY_INSTITUTIONAL_FLOW(ticker)` | ownership | Whale investors, conglomerate group, institutional net flow, top buyers/sellers |
+| `COMPANY_MANAGEMENT(ticker)` | management | Key executives; executive shareholdings |
+| `COMPANY_PEERS(ticker)` | peers | Peer table: market cap, PE TTM, PB MRQ, revenue, net income, balance sheet |
+| `COMPANY_FORECAST(ticker)` | future | EPS/revenue estimates, growth forecasts, analyst rating breakdown |
 
-Examples:
+| Function | Endpoint | Returns |
+|---|---|---|
+| `COMPANY_CORPORATE_ACTIONS(ticker, [actionType])` | `/v2/company/corporate-actions/{ticker}/` | One section per type (agm, dividend, stock_split, right_issue, bonus, warrant, upcoming_dividend), or one table if `actionType` is set |
+| `SHAREHOLDERS_COMPOSITION(ticker, [year])` | `/v2/company/shareholders-composition/{ticker}/` | Monthly holdings by investor type; `_l` local, `_f` foreign |
 
-```excel
-=SECTORS.COMPANY_OVERVIEW("BBCA")
-=SECTORS.COMPANY_VALUATION("BBCA")
-=SECTORS.COMPANY_FINANCIALS("BBCA")
-=SECTORS.COMPANY_DIVIDEND("BBCA")
-=SECTORS.COMPANY_OWNERSHIP("BBCA")
-```
+## 3. Subsector Report (IDX)
 
----
+All read `/v2/subsector/report/{subSector}/?sections=<section>`.
 
-### 4. Subsector Report by Section (IDX)
+| Function | Section | Returns |
+|---|---|---|
+| `SUBSECTOR_STATISTICS(subSector)` | statistics | Company count, median/weighted PE, min/max PE |
+| `SUBSECTOR_MARKET_CAP(subSector)` | market_cap | Total/avg market cap, 1W/1Y/YTD change, quarterly TTM market cap |
+| `SUBSECTOR_VALUATION(subSector)` | valuation | Yearly PE/PB/PS/PCF with rank among subsectors |
+| `SUBSECTOR_GROWTH(subSector)` | growth | Yearly weighted earnings/revenue growth; growth forecasts |
+| `SUBSECTOR_STABILITY(subSector)` | stability | Weighted max drawdown, weighted RSD of close |
+| `SUBSECTOR_TOP_COMPANIES(subSector)` | companies | Top companies by market cap, growth, profit, revenue |
 
-Endpoint pattern: `GET /v2/subsector/report/{sub_sector}/?sections=<section>`
+## 4. Financial Statements and Segments (IDX)
 
-| # | Excel Function | Section | Real Usage |
-|---|---|---|---|
-| 10 | `SECTORS.SUBSECTOR_STATISTICS` | `statistics` | Subsector valuation distribution |
-| 11 | `SECTORS.SUBSECTOR_MARKET_CAP` | `market_cap` | Size and performance trend |
-| 12 | `SECTORS.SUBSECTOR_VALUATION` | `valuation` | Historical PE/PB/PS/PCF view |
-| 13 | `SECTORS.SUBSECTOR_GROWTH` | `growth` | Weighted earnings/revenue growth history |
+| Function | Endpoint | Returns |
+|---|---|---|
+| `QUARTERLY_FINANCIALS(ticker, [nQuarters], [reportDate], [approx])` | `/v2/financials/quarterly/{ticker}/` | Quarterly income statement, balance sheet, cash flow; bank metrics (NII, loans, deposits) where available |
+| `QUARTERLY_FINANCIAL_DATES(ticker)` | `/v2/company/get_quarterly_financial_dates/{ticker}/` | `Year`, `Date`, `Quarter` |
+| `LATEST_QUARTERLY_DATES([year], [since], [limit], [offset])` | `/v2/companies/quarterly-financial-dates/` | Latest reported quarter per company |
+| `COMPANY_SEGMENTS(ticker, [financialYear])` | `/v2/company/get-segments/{ticker}/` | `Source`, `Target`, `Value (IDR)` |
+| `COMPANIES_WITH_SEGMENTS()` | `/v2/companies/list_companies_with_segments/` | `Symbol`, `Financial Years` |
 
-Examples:
+## 5. Prices and Market Data (IDX)
 
-```excel
-=SECTORS.SUBSECTOR_STATISTICS("banks")
-=SECTORS.SUBSECTOR_MARKET_CAP("banks")
-=SECTORS.SUBSECTOR_VALUATION("banks")
-=SECTORS.SUBSECTOR_GROWTH("banks")
-```
+| Function | Endpoint | Returns |
+|---|---|---|
+| `DAILY_PRICE(ticker, [start], [end])` | `/v2/daily/{ticker}/` | `Date`, `Close`, `Volume`, `Market Cap`, `Open`, `High`, `Low` (max 90 days per call) |
+| `DAILY_CLOSE_ALL([date], [limit], [offset])` | `/v2/close/` | Close of every ticker on one day |
+| `IDX_MARKET_CAP([start], [end])` | `/v2/idx-total/` | `Date`, `IDX Total Market Cap` |
+| `INDEX_DAILY(indexCode, [start], [end])` | `/v2/index-daily/{indexCode}/` | `Date`, `Index`, `Price` |
+| `INDEX_DAILY_ALL([date])` | `/v2/index-daily/` | Every index on one day |
+| `MOST_TRADED([start], [end], [nStock], [subSector], [adjusted])` | `/v2/most-traded/` | `Date`, `Symbol`, `Company`, `Volume`, `Price` |
+| `TOP_MOVERS([classifications], [periods], [nStock], [subSector], [minMcapBillion])` | `/v2/companies/top-changes/` | `Type`, `Period`, `Symbol`, `Name`, `Price Change`, `Last Price`, `Latest Close Date` |
+| `IPO_PERFORMANCE(ticker)` | `/v2/listing-performance/{ticker}/` | 7/30/90/365-day change since listing, then IPO offering details |
+| `FOREIGN_FLOW(ticker, [start], [end])` | `/v2/foreign-flow/{ticker}/` | Daily foreign buy/sell/net and foreign share |
+| `FOREIGN_FLOW_ALL([date], [orderBy], [limit], [offset])` | `/v2/foreign-flow/` | Foreign flow for every ticker on one day |
+| `SUSPENSIONS([symbol], [start], [end], [limit], [offset])` | `/v2/suspensions/` | `Symbol`, `Suspension Date`, `Reason`, `PDF` |
+| `CORPORATE_ACTIONS_CALENDAR([actionType], [start], [end])` | `/v2/corporate-actions/` | One section per action type across all companies |
 
----
+## 6. Filings and News (IDX)
 
-### 5. Quarterly Financials and Segments
+| Function | Endpoint | Returns |
+|---|---|---|
+| `FILINGS([symbol], [subSector], [start], [end], [transactionType], [holderType], [limit], [offset], [sector], [tags])` | `/v2/filings/` | Insider/major-holder transactions with holdings before/after |
+| `NEWS([symbols], [subSector], [start], [end], [keyword], [limit], [offset], [sector], [tags], [extension], [commodityType])` | `/v2/news/` | Articles; set `extension` to `"mining"` for mining news |
 
-| # | Excel Function | Endpoint | Real Usage |
-|---|---|---|---|
-| 14 | `SECTORS.QUARTERLY_FINANCIALS` | `GET /v2/financials/quarterly/{ticker}/` | Quarterly modeling and trend analysis |
-| 15 | `SECTORS.COMPANY_SEGMENTS` | `GET /v2/company/get-segments/{ticker}/` | Revenue structure by business line |
+## 7. Brokers (IDX)
 
-Examples:
+| Function | Endpoint | Returns |
+|---|---|---|
+| `BROKERS([cohort], [origin])` | `/v2/brokers/` | Broker registry |
+| `TOP_BROKERS([date], [metric], [nBrokers], [origin], [cohort], [foreign])` | `/v2/brokers/top/` | Daily broker ranking by gross or net value |
+| `BROKER_ACTIVITY(brokerCode, [symbol], [start], [end])` | `/v2/broker-activity/{brokerCode}/` | Daily buy/sell/net per stock for one broker |
+| `BROKER_TOP_STOCKS(brokerCode, [start], [end], [nBrokers], [foreign])` | `/v2/broker-activity/{brokerCode}/top/` | Top accumulations and distributions |
+| `BROKER_SUMMARY(ticker, [brokerCode], [start], [end])` | `/v2/broker-summary/{ticker}/` | Daily buy/sell/net per broker for one stock |
+| `BROKER_SUMMARY_TOP(ticker, [start], [end], [nBrokers], [origin], [cohort], [foreign])` | `/v2/broker-summary/{ticker}/top/` | Top buying and selling brokers |
 
-```excel
-=SECTORS.QUARTERLY_FINANCIALS("BBCA", 4)
-=SECTORS.QUARTERLY_FINANCIALS("BBCA",, "2024-12-31")
-=SECTORS.COMPANY_SEGMENTS("ASII", 2024)
-```
+## 8. Helper Lists (IDX)
 
----
+| Function | Endpoint |
+|---|---|
+| `SUBSECTORS()` | `/v2/subsectors/` |
+| `INDUSTRIES()` | `/v2/industries/` |
+| `SUBINDUSTRIES()` | `/v2/subindustries/` |
+| `NEWS_TAGS()` | `/v2/tags/` |
 
-### 6. Price and Market Data
+## 9. Malaysia (KLSE)
 
-| # | Excel Function | Endpoint | Real Usage |
-|---|---|---|---|
-| 16 | `SECTORS.DAILY_PRICE` | `GET /v2/daily/{ticker}/` | Stock charting and volume analysis |
-| 17 | `SECTORS.IDX_MARKET_CAP` | `GET /v2/idx-total/` | Macro IDX trend tracking |
-| 18 | `SECTORS.INDEX_DAILY` | `GET /v2/index-daily/{index_code}/` | Benchmark index performance |
+| Function | Endpoint | Returns |
+|---|---|---|
+| `KLSE_SECTORS()` | `/v2/klse/sectors/` | Sector slugs |
+| `KLSE_COMPANIES(sector)` | `/v2/klse/companies/` | `Symbol`, `Company Name` |
+| `KLSE_TOP_COMPANIES([classifications], [sector], [nStock], [minMcapMillion])` | `/v2/klse/companies/top/` | `Classification`, `Symbol`, `Company`, `Value` |
+| `KLSE_OVERVIEW(ticker)` | `/v2/klse/company/report/{ticker}/` | Market cap, sector, volume, 1D/7D/1M/1Y/YTD/3Y change |
+| `KLSE_VALUATION(ticker)` | same | PE, PB, PS, PCF, Beta |
+| `KLSE_FINANCIALS(ticker)` | same | Margins and ratios; revenue and earnings by period (TTM and years) |
+| `KLSE_DIVIDEND(ticker)` | same | Yield, growth, payout, forward dividend, TTM |
 
-Examples:
+## 10. Singapore (SGX)
 
-```excel
-=SECTORS.DAILY_PRICE("BBCA", "2025-01-01", "2025-03-01")
-=SECTORS.IDX_MARKET_CAP("2025-01-01", "2025-03-01")
-=SECTORS.INDEX_DAILY("ihsg", "2025-01-01", "2025-03-01")
-```
+| Function | Endpoint | Returns |
+|---|---|---|
+| `SGX_SECTORS()` | `/v2/sgx/sectors/` | Sector slugs |
+| `SGX_SUBSECTORS()` | `/v2/sgx/subsectors/` | Sector and subsector slugs |
+| `SGX_COMPANIES(sector)` | `/v2/sgx/companies/` | `Symbol`, `Company Name` (slug or label, e.g. `"financial-services"`) |
+| `SGX_SCREEN(where, [orderBy], [limit], [offset])` | `/v2/sgx/companies/` | Like `SCREEN` for SGX |
+| `SGX_SCREEN_NL(query)` | `/v2/sgx/companies/?q=` | Like `SCREEN_NL` for SGX |
+| `SGX_TOP_COMPANIES([classifications], [sector], [nStock], [minMcapMillion])` | `/v2/sgx/companies/top/` | `Classification`, `Symbol`, `Company`, `Value` |
+| `SGX_OVERVIEW(ticker)` | `/v2/sgx/company/report/{ticker}/` | Market cap, sector, price, 1D–3Y change, listing, website |
+| `SGX_VALUATION(ticker)` | same | PE, PB, PS, PCF, Beta |
+| `SGX_FINANCIALS(ticker)` | same | Margins, growth, ratios; yearly revenue, earnings, cash flow |
+| `SGX_DIVIDEND(ticker)` | same | Yield/payout metrics; yearly totals; upcoming dividends |
+| `SGX_MANAGEMENT(ticker)` | same | Current and former management |
+| `SGX_OWNERSHIP(ticker)` | same | Major shareholders |
+| `SGX_DAILY_PRICE(ticker, [start], [end])` | `/v2/sgx/daily/{ticker}/` | `Date`, `Close`, `Volume`, `Open`, `High`, `Low` |
+| `SGX_DAILY_CLOSE_ALL([date], [limit], [offset])` | `/v2/sgx/close/` | Close of every SGX ticker on one day |
+| `SGX_CORPORATE_ACTIONS(ticker, [actionType])` | `/v2/sgx/company/corporate-actions/{ticker}/` | AGMs, dividends, upcoming dividends |
+| `SGX_FILINGS([symbol], [start], [end], [transactionType], [holderType], [limit], [offset])` | `/v2/sgx/filings/` | Insider/institution filings with interest before/after |
+| `SGX_NEWS([symbols], [sector], [subSector], [start], [end], [tags], [limit], [offset])` | `/v2/sgx/news/` | Articles |
+| `SGX_NEWS_TAGS()` | `/v2/sgx/tags/` | Tag slugs |
+| `SGX_BUYBACKS([symbol], [start], [end], [limit], [offset])` | `/v2/sgx/buybacks/` | Buybacks with price range and mandate |
+| `SGX_SHORT_SELL([symbol], [start], [end], [orderBy], [limit], [offset])` | `/v2/sgx/short-sell/` | Daily short-sell volume and value |
 
----
+### SGX REITs
 
-### 7. Rankings and IPO
+| Function | Endpoint | Returns |
+|---|---|---|
+| `SGX_REIT_SCREEN([where], [orderBy], [limit], [offset])` | `/v2/sgx/reits/` | REITs plus the fields used, e.g. `aggregate_leverage[latest] < 0.4` |
+| `SGX_REIT_SCREEN_NL(query)` | `/v2/sgx/reits/?q=` | REITs matching a natural-language query |
+| `SGX_REIT_PROFILE(ticker)` | `/v2/sgx/reits/profile/{ticker}/` | Sponsor, trustee, managers, board |
+| `SGX_REIT_PERFORMANCE(ticker, [financialYear])` | `/v2/sgx/reits/performance/{ticker}/` | Yield, P/NAV, NPI, DPU, gearing, occupancy, WALE; distribution record |
+| `SGX_REIT_PROPERTIES(ticker, [financialYear])` | `/v2/sgx/reits/properties/{ticker}/` | Property portfolio |
+| `SGX_REIT_TENANTS(ticker, [financialYear])` | `/v2/sgx/reits/tenants/{ticker}/` | Top tenants |
+| `SGX_REIT_TRADE_MIX(ticker, [financialYear])` | `/v2/sgx/reits/trade-mix/{ticker}/` | Income by trade category |
+| `SGX_REIT_TRANSACTIONS([symbol], [start], [end], [transactionType], [financialYear], [orderBy], [limit], [offset])` | `/v2/sgx/reits/transactions/` | Acquisitions and divestments |
 
-| # | Excel Function | Endpoint | Real Usage |
-|---|---|---|---|
-| 19 | `SECTORS.MOST_TRADED` | `GET /v2/most-traded/` | Liquidity and activity watchlist |
-| 20 | `SECTORS.TOP_MOVERS` | `GET /v2/companies/top-changes/` | Gainers/losers by time period |
-| 21 | `SECTORS.IPO_PERFORMANCE` | `GET /v2/listing-performance/{ticker}/` | Post-listing performance checks |
+## 11. Mining (Indonesia)
 
-Examples:
+Company and site functions take a **slug** from `MINING_COMPANIES` / `MINING_SITES`.
 
-```excel
-=SECTORS.MOST_TRADED("2025-01-01", "2025-01-31", 5)
-=SECTORS.TOP_MOVERS("top_gainers", "7d", 5)
-=SECTORS.IPO_PERFORMANCE("GOTO")
-```
-
----
-
-### 8. Malaysia (KLSE)
-
-| # | Excel Function | Endpoint | Real Usage |
-|---|---|---|---|
-| 22 | `SECTORS.KLSE_SECTORS` | `GET /v2/klse/sectors/` | Sector discovery |
-| 23 | `SECTORS.KLSE_COMPANIES` | `GET /v2/klse/companies/` | Company list by sector |
-| 24 | `SECTORS.KLSE_TOP_COMPANIES` | `GET /v2/klse/companies/top/` | Ranking by valuation/dividend/size |
-| 25 | `SECTORS.KLSE_OVERVIEW` | `GET /v2/klse/company/report/{ticker}/` | Snapshot metrics |
-| 26 | `SECTORS.KLSE_VALUATION` | `GET /v2/klse/company/report/{ticker}/` | Valuation ratios |
-| 27 | `SECTORS.KLSE_FINANCIALS` | `GET /v2/klse/company/report/{ticker}/` | Financial history and ratios |
-| 28 | `SECTORS.KLSE_DIVIDEND` | `GET /v2/klse/company/report/{ticker}/` | Dividend metrics |
-
-Examples:
-
-```excel
-=SECTORS.KLSE_SECTORS()
-=SECTORS.KLSE_COMPANIES("financials")
-=SECTORS.KLSE_TOP_COMPANIES("market_cap", "financials")
-=SECTORS.KLSE_OVERVIEW("1155")
-=SECTORS.KLSE_VALUATION("1155")
-=SECTORS.KLSE_FINANCIALS("1155")
-=SECTORS.KLSE_DIVIDEND("1155")
-```
-
----
-
-### 9. Singapore (SGX)
-
-| # | Excel Function | Endpoint | Real Usage |
-|---|---|---|---|
-| 29 | `SECTORS.SGX_SECTORS` | `GET /v2/sgx/sectors/` | Sector discovery |
-| 30 | `SECTORS.SGX_COMPANIES` | `GET /v2/sgx/companies/` | Company list by sector |
-| 31 | `SECTORS.SGX_TOP_COMPANIES` | `GET /v2/sgx/companies/top/` | Ranking by valuation/dividend/size |
-| 32 | `SECTORS.SGX_OVERVIEW` | `GET /v2/sgx/company/report/{ticker}/` | Snapshot with multi-period change |
-| 33 | `SECTORS.SGX_VALUATION` | `GET /v2/sgx/company/report/{ticker}/` | Valuation ratios |
-| 34 | `SECTORS.SGX_FINANCIALS` | `GET /v2/sgx/company/report/{ticker}/` | Financial history |
-| 35 | `SECTORS.SGX_DIVIDEND` | `GET /v2/sgx/company/report/{ticker}/` | Dividend history and yield |
-
-Examples:
-
-```excel
-=SECTORS.SGX_SECTORS()
-=SECTORS.SGX_COMPANIES("financial-services")
-=SECTORS.SGX_TOP_COMPANIES("dividend_yield", "financial-services")
-=SECTORS.SGX_OVERVIEW("D05")
-=SECTORS.SGX_VALUATION("D05")
-=SECTORS.SGX_FINANCIALS("D05")
-=SECTORS.SGX_DIVIDEND("D05")
-```
-
----
-
-## Part 2: Detailed Implementation Reference (Parameters + Output Schema)
-
-### A. Companies Screener (IDX)
-
-| Function | Signature | Defaults / Allowed Values | Output Schema |
-|---|---|---|---|
-| `SECTORS.SCREEN` | `SCREEN(where, [orderBy], [limit])` | `limit`: API default 50, max 200. `orderBy`: supports `-` prefix for descending. | Header row: `Symbol`, `Company Name` |
-| `SECTORS.SCREEN_NL` | `SCREEN_NL(query)` | Natural-language `query` sent as `q`. | Header row: `Symbol`, `Company Name` |
-| `SECTORS.FREE_FLOAT` | `FREE_FLOAT([subSector])` | `subSector` optional (`sub_sector`). | Header row: `Symbol`, `Company Name`, `Free Float %` |
-
-### B. Company Report by Section (IDX)
-
-| Function | Signature | Defaults / Allowed Values | Output Schema |
-|---|---|---|---|
-| `SECTORS.COMPANY_OVERVIEW` | `COMPANY_OVERVIEW(ticker)` | `ticker` required. | Key-value rows: `Company Name`, `Sector`, `Sub Sector`, `Industry`, `Market Cap`, `Market Cap Rank`, `Last Close Price`, `Daily Change`, `Listing Date`, `Employee Count`, `ESG Score`, `Website` |
-| `SECTORS.COMPANY_VALUATION` | `COMPANY_VALUATION(ticker)` | `ticker` required. | Key metrics rows, then table header: `Year`, `PE`, `PB`, `PS`, `PCF`, `PEG`, `EV/EBITDA`, `EV/Revenue` |
-| `SECTORS.COMPANY_FINANCIALS` | `COMPANY_FINANCIALS(ticker)` | `ticker` required. | Key metrics rows, then table header: `Year`, `Revenue`, `Earnings`, `EBITDA`, `EBIT`, `Total Assets`, `Total Equity`, `Total Debt`, `Free Cash Flow`, `Operating Cash Flow` |
-| `SECTORS.COMPANY_DIVIDEND` | `COMPANY_DIVIDEND(ticker)` | `ticker` required. | Key metrics rows, then table header: `Year`, `Total Dividend`, `Total Yield` |
-| `SECTORS.COMPANY_OWNERSHIP` | `COMPANY_OWNERSHIP(ticker)` | `ticker` required. | Header row: `Shareholder`, `Share %`, `Share Amount`, `Share Value` |
-
-### C. Subsector Report by Section (IDX)
-
-| Function | Signature | Defaults / Allowed Values | Output Schema |
-|---|---|---|---|
-| `SECTORS.SUBSECTOR_STATISTICS` | `SUBSECTOR_STATISTICS(subSector)` | `subSector` required (slug, example `banks`). | Key-value rows: `Total Companies`, `Filtered Median PE`, `Filtered Weighted Avg PE`, `Min Company PE`, `Max Company PE` |
-| `SECTORS.SUBSECTOR_MARKET_CAP` | `SUBSECTOR_MARKET_CAP(subSector)` | `subSector` required. | Key-value rows: `Total Market Cap`, `Avg Market Cap`, `1W Change`, `1Y Change`, `YTD Change` |
-| `SECTORS.SUBSECTOR_VALUATION` | `SUBSECTOR_VALUATION(subSector)` | `subSector` required. | Header row: `Year`, `PE`, `PB`, `PS`, `PCF` |
-| `SECTORS.SUBSECTOR_GROWTH` | `SUBSECTOR_GROWTH(subSector)` | `subSector` required. | Header row: `Year`, `Avg Earnings Growth`, `Avg Revenue Growth` |
-
-### D. Quarterly Financials and Segments
-
-| Function | Signature | Defaults / Allowed Values | Output Schema |
-|---|---|---|---|
-| `SECTORS.QUARTERLY_FINANCIALS` | `QUARTERLY_FINANCIALS(ticker, [nQuarters], [reportDate])` | `nQuarters` optional. `reportDate` optional (`YYYY-MM-DD`). | Header row: `Date`, `Revenue`, `Earnings`, `Total Assets`, `Total Equity`, `Total Liabilities`, `Operating Cash Flow` |
-| `SECTORS.COMPANY_SEGMENTS` | `COMPANY_SEGMENTS(ticker, [financialYear])` | `financialYear` optional (latest if omitted). | Header row: `Source`, `Target`, `Value (IDR)` |
-
-### E. Price and Market Data
-
-| Function | Signature | Defaults / Allowed Values | Output Schema |
-|---|---|---|---|
-| `SECTORS.DAILY_PRICE` | `DAILY_PRICE(ticker, [start], [end])` | `start`, `end` optional (`YYYY-MM-DD`). | Header row: `Date`, `Close`, `Volume`, `Market Cap` |
-| `SECTORS.IDX_MARKET_CAP` | `IDX_MARKET_CAP([start], [end])` | `start`, `end` optional (`YYYY-MM-DD`). | Header row: `Date`, `IDX Total Market Cap` |
-| `SECTORS.INDEX_DAILY` | `INDEX_DAILY(indexCode, [start], [end])` | `indexCode` required (examples: `ihsg`, `lq45`, `idx30`). | Header row: `Date`, `Index`, `Price` |
-
-### F. Rankings and IPO
-
-| Function | Signature | Defaults / Allowed Values | Output Schema |
-|---|---|---|---|
-| `SECTORS.MOST_TRADED` | `MOST_TRADED([start], [end], [nStock])` | `nStock`: API default 5, max 10. | Header row: `Date`, `Symbol`, `Company`, `Volume`, `Price` |
-| `SECTORS.TOP_MOVERS` | `TOP_MOVERS([classifications], [periods], [nStock])` | `classifications`: `top_gainers`, `top_losers`, or both. `periods`: `1d`, `7d`, `14d`, `30d`, `365d`. `nStock`: API default 5, max 10. | Header row: `Type`, `Period`, `Symbol`, `Name`, `Price Change`, `Last Price` |
-| `SECTORS.IPO_PERFORMANCE` | `IPO_PERFORMANCE(ticker)` | `ticker` required. | Header row: `Period`, `Change` with rows `7 Days`, `30 Days`, `90 Days`, `365 Days` |
-
-### G. Malaysia (KLSE)
-
-| Function | Signature | Defaults / Allowed Values | Output Schema |
-|---|---|---|---|
-| `SECTORS.KLSE_SECTORS` | `KLSE_SECTORS()` | No parameters. | Header row: `Sector` |
-| `SECTORS.KLSE_COMPANIES` | `KLSE_COMPANIES(sector)` | `sector` required (slug). | Header row: `Symbol`, `Company Name` |
-| `SECTORS.KLSE_TOP_COMPANIES` | `KLSE_TOP_COMPANIES([classifications], [sector])` | `classifications` options: `dividend_yield`, `revenue`, `earnings`, `market_cap`, `pe`. `sector` optional. | Header row: `Classification`, `Symbol`, `Company`, `Value` |
-| `SECTORS.KLSE_OVERVIEW` | `KLSE_OVERVIEW(ticker)` | `ticker` required. | Key-value rows: `Name`, `Market Cap`, `Sector`, `Sub Sector`, `Volume`, `1D Change`, `7D Change` |
-| `SECTORS.KLSE_VALUATION` | `KLSE_VALUATION(ticker)` | `ticker` required. | Key-value rows: `PE`, `PE TTM`, `PB`, `PS TTM`, `PCF`, `PCF TTM` |
-| `SECTORS.KLSE_FINANCIALS` | `KLSE_FINANCIALS(ticker)` | `ticker` required. | Key metrics rows, then table header: `Period`, `Revenue`, `Earnings` |
-| `SECTORS.KLSE_DIVIDEND` | `KLSE_DIVIDEND(ticker)` | `ticker` required. | Key-value rows: `5Y Avg Yield`, `Growth Rate`, `Payout Ratio`, `Forward Dividend`, `Forward Div Yield`, `Dividend TTM` |
-
-### H. Singapore (SGX)
-
-| Function | Signature | Defaults / Allowed Values | Output Schema |
-|---|---|---|---|
-| `SECTORS.SGX_SECTORS` | `SGX_SECTORS()` | No parameters. | Header row: `Sector` |
-| `SECTORS.SGX_COMPANIES` | `SGX_COMPANIES(sector)` | `sector` required (slug). | Header row: `Symbol`, `Company Name` |
-| `SECTORS.SGX_TOP_COMPANIES` | `SGX_TOP_COMPANIES([classifications], [sector])` | `classifications` options: `dividend_yield`, `revenue`, `earnings`, `market_cap`, `pe`. `sector` optional. | Header row: `Classification`, `Symbol`, `Company`, `Value` |
-| `SECTORS.SGX_OVERVIEW` | `SGX_OVERVIEW(ticker)` | `ticker` required. | Key-value rows: `Name`, `Market Cap`, `Sector`, `Sub Sector`, `Volume`, `1D Change`, `7D Change`, `1M Change`, `1Y Change`, `YTD Change` |
-| `SECTORS.SGX_VALUATION` | `SGX_VALUATION(ticker)` | `ticker` required. | Key-value rows: `PE`, `PB`, `PS`, `PCF` |
-| `SECTORS.SGX_FINANCIALS` | `SGX_FINANCIALS(ticker)` | `ticker` required. | Key metrics rows, then table header: `Year`, `Revenue`, `Earnings` |
-| `SECTORS.SGX_DIVIDEND` | `SGX_DIVIDEND(ticker)` | `ticker` required. | Key metrics rows, then table header: `Year`, `Total Dividend`, `Total Yield` |
+| Function | Endpoint |
+|---|---|
+| `MINING_COMMODITIES()` | `/v2/mining/commodities/` |
+| `MINING_COMMODITY_PRICE(commodity, [startYear], [endYear])` | `/v2/mining/commodities/{commodity}/price/` |
+| `MINING_COMPANIES([commodityType], [keyword], [companyType], [hasFinancials], [limit], [offset])` | `/v2/mining/companies/` |
+| `MINING_COMPANY(slug)` | `/v2/mining/companies/{slug}/` |
+| `MINING_COMPANY_FINANCIALS(slug, [year])` | `/v2/mining/companies/financials/{slug}/` |
+| `MINING_COMPANY_OWNERSHIP(slug)` | `/v2/mining/companies/ownership/{slug}/` |
+| `MINING_COMPANY_PERFORMANCE(slug, [commodityType], [year])` | `/v2/mining/companies/performance/{slug}/` |
+| `MINING_SALES_DESTINATION(slug, [year])` | `/v2/mining/sales-destination/{slug}/` |
+| `MINING_CONTRACTS([contractor], [mineOwner])` | `/v2/mining/contracts/` |
+| `MINING_EXPORTS(commodityType, year, [limit])` | `/v2/mining/exports/` |
+| `MINING_GLOBAL_COMMODITY([commodityType], [country], [limit])` | `/v2/mining/global-commodity/` |
+| `MINING_TOTAL_PRODUCTION(commodityType)` | `/v2/mining/total-production/` |
+| `MINING_LICENSES([province], [commodityType], [company], [licenseType], [activity], [expiringSoon], [orderBy], [limit], [offset])` | `/v2/mining/licenses/` |
+| `MINING_LICENSE_AUCTIONS([province], [commodityType], [participant], [status], [areaType], [orderBy], [limit], [offset])` | `/v2/mining/license-auctions/` |
+| `MINING_LICENSE_AUCTION(wiupCode)` | `/v2/mining/license-auctions/{wiupCode}/` |
+| `MINING_SITES([province], [commodityType], [company], [year], [orderBy], [minProduction], [limit], [offset])` | `/v2/mining/sites/` |
+| `MINING_SITE(slug)` | `/v2/mining/sites/{slug}/` |
+| `MINING_RESERVES_INDEX()` | `/v2/mining/resources-reserves/` |
+| `MINING_RESERVES(province, [commodityType], [year])` | `/v2/mining/resources-reserves/{province}/` |
 
 ---
 
-## Part 3: Quick Usage Notes for Analysts
+## Changes in 1.1.0
 
-- If a function spills only one `Error` row, validate API key first in task pane.
-- For rolling datasets (`DAILY_PRICE`, `INDEX_DAILY`, `IDX_MARKET_CAP`, `MOST_TRADED`), always set explicit `start` and `end` for reproducible models.
-- For rank/screener functions, keep formulas in a fixed output area because spill size can change by date and filters.
+All 34 existing function names and parameter positions are unchanged (new parameters were appended at the end), and new table columns were appended after the old ones. Layout changes that can shift cell references are listed below.
 
----
+- **Fixed** `SGX_COMPANIES`: v2 turned `/sgx/companies/` into a screener, so the old `sector=` call returned an error. It now filters with `where sector = '<label>'`.
+- **Fixed** `KLSE_FINANCIALS`: v2 returns revenue/earnings keyed by period (`TTM`, `2024`, ...), which the old code read as an empty list.
+- **Changed rows** `KLSE_VALUATION`: `PE TTM`, `PS TTM` and `PCF TTM` no longer exist in v2 (they were always blank). Rows are now `PE`, `PB`, `PS`, `PCF`, `Beta`.
+- **Changed layout**: `COMPANY_FINANCIALS` (+2 YoY TTM growth rows), `COMPANY_DIVIDEND` (+2 average-yield rows), `SGX_FINANCIALS` (+6 ratio rows) and `SGX_DIVIDEND` (+1 forward-yield row) gained summary rows above their yearly table, so the table starts lower. Formulas that point at fixed cells inside those spills (rather than using `INDEX`/`XLOOKUP` on the labels) need updating.
+- `SCREEN` / `SCREEN_NL` now return the filtered/sorted field values as extra columns (e.g. `free_float`, `market_cap`).
+- `FREE_FLOAT` accepts `sector`, `industry` and `subIndustry` filters.
+- Report functions now request only their section, so they use less data per call.
+- 70 new functions: company management/peers/forecast/ratios/institutional flow, corporate actions, shareholder composition, filings, news, suspensions, foreign flow, brokers, helper lists, full-universe close, SGX daily/filings/news/buybacks/short-sell/REITs, and mining.
+
+## Quick Usage Notes for Analysts
+
+- If a function spills only one `Error` row, check the API key in the task pane first.
+- For rolling datasets (`DAILY_PRICE`, `INDEX_DAILY`, `IDX_MARKET_CAP`, `MOST_TRADED`, `FOREIGN_FLOW`), set explicit `start` and `end` for reproducible models.
+- Keep screener and ranking formulas in a clear area: spill size changes with dates and filters.
