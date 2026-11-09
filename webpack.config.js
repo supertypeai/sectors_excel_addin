@@ -98,6 +98,15 @@ module.exports = async (env, options) => {
         options: env.WEBPACK_BUILD || options.https !== undefined ? options.https : await getHttpsOptions(),
       },
       port: process.env.npm_package_config_dev_server_port || 3000,
+      // The API only allows CORS from the deployed origin, so local runs go through this proxy.
+      proxy: [
+        {
+          context: ["/sectors-api"],
+          target: "https://api.sectors.app",
+          pathRewrite: { "^/sectors-api": "" },
+          changeOrigin: true,
+        },
+      ],
     },
   };
 

@@ -1,4 +1,6 @@
-const BASE_URL = "https://api.sectors.app/v2";
+/* global location */
+const IS_LOCAL = typeof location !== "undefined" && location.hostname === "localhost";
+const BASE_URL = IS_LOCAL ? `${location.origin}/sectors-api/v2` : "https://api.sectors.app/v2";
 const EXCEL_EPOCH = Date.UTC(1899, 11, 30);
 const DAY_MS = 86400000;
 const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
