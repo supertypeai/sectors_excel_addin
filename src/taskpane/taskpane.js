@@ -18,6 +18,7 @@ const GROUPS = [
 
 // The initialize function must be run each time a new page is loaded
 Office.onReady(() => {
+  applyTheme();
   document.getElementById("sideload-msg").style.display = "none";
   document.getElementById("app-body").style.display = "flex";
   document.getElementById("save-api-key").onclick = saveApiKey;
@@ -27,19 +28,30 @@ Office.onReady(() => {
   loadCatalog();
 });
 
+function isDark(hex) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex || "");
+  if (!m) return null;
+  const n = parseInt(m[1], 16);
+  return 0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255) < 128;
+}
+
+function applyTheme() {
+  const officeDark = isDark(Office.context.officeTheme?.bodyBackgroundColor);
+  const dark = officeDark ?? window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+  document.documentElement.dataset.theme = dark ? "dark" : "light";
+}
+
 async function loadCatalog() {
-  const status = document.getElementById("fn-status");
   try {
     const res = await fetch("functions.json");
     const { functions } = await res.json();
     const groups = GROUPS.map(([title, re]) => renderGroup(title, functions.filter((f) => re.test(f.id))));
     document.getElementById("fn-list").append(...groups);
     const search = document.getElementById("fn-search");
-    search.placeholder = `Search ${functions.length} functions, e.g. dividend, broker, SGX`;
+    search.placeholder = `Search ${functions.length} functions`;
     search.oninput = () => filterCatalog(search.value.trim().toLowerCase());
   } catch (e) {
-    status.textContent = `Could not load the function list: ${e.message}`;
-    status.className = "ms-font-s status-message error";
+    setStatus(`Could not load the function list: ${e.message}`, true, "fn-status");
   }
 }
 
@@ -74,9 +86,8 @@ function renderFunction(f) {
   const formula = el("input", "fn-formula");
   formula.value = exampleFormula(f);
   formula.setAttribute("aria-label", `${f.id} formula`);
-  const insert = el("button", "ms-Button ms-Button--primary");
+  const insert = el("button", "btn btn-primary", "Insert");
   insert.type = "button";
-  insert.append(el("span", "ms-Button-label", "Insert"));
   insert.onclick = () => insertFormula(formula.value);
   const row = el("div", "fn-insert");
   row.append(formula, insert);
@@ -112,19 +123,16 @@ function filterCatalog(query) {
 }
 
 async function insertFormula(formula) {
-  const status = document.getElementById("fn-status");
   try {
     await Excel.run(async (context) => {
       const cell = context.workbook.getActiveCell();
       cell.formulas = [[formula]];
       cell.load("address");
       await context.sync();
-      status.textContent = `Inserted into ${cell.address.split("!").pop()}.`;
-      status.className = "ms-font-s status-message success";
+      setStatus(`Inserted into ${cell.address.split("!").pop()}.`, false, "fn-status");
     });
   } catch (e) {
-    status.textContent = `Could not insert: ${e.message}`;
-    status.className = "ms-font-s status-message error";
+    setStatus(`Could not insert: ${e.message}`, true, "fn-status");
   }
 }
 
@@ -182,10 +190,8 @@ function maskApiKey(key) {
   return `${key.slice(0, 3)}...${key.slice(-3)}`;
 }
 
-function setStatus(message, isError) {
-  const status = document.getElementById("api-key-status");
+function setStatus(message, isError, id = "api-key-status") {
+  const status = document.getElementById(id);
   status.textContent = message;
-  status.className = isError
-    ? "ms-font-s status-message error"
-    : "ms-font-s status-message success";
+  status.className = `status-message ${isError ? "error" : "success"}`;
 }
