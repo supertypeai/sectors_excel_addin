@@ -1,0 +1,267 @@
+:root {
+    --bg: #ffffff;
+    --surface: #f6f6f7;
+    --border: #e1e1e4;
+    --text: #1d1d20;
+    --muted: #5f5f66;
+    --link: #c81e4a;
+    --accent: #d62652;
+    --accent-hover: #b81f46;
+    --accent-text: #ffffff;
+    --input-bg: #ffffff;
+    --code-bg: #eeeef0;
+    --success: #107c10;
+    --error: #b42318;
+    --header-bg: #17171b;
+}
+
+:root[data-theme="dark"] {
+    --bg: #1f1f22;
+    --surface: #2a2a2e;
+    --border: #3b3b41;
+    --text: #ececef;
+    --muted: #a8a8b0;
+    --link: #ff7a9a;
+    --accent: #e0335e;
+    --accent-hover: #f0466f;
+    --input-bg: #18181b;
+    --code-bg: #34343a;
+    --success: #6ccb5f;
+    --error: #ff8a80;
+    --header-bg: #111113;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+a {
+    color: var(--link);
+}
+
+h2,
+h3,
+p {
+    margin: 0;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--header-bg);
+    color: #ffffff;
+}
+
+.header img {
+    width: 48px;
+    height: 48px;
+}
+
+.header-title {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.header-sub {
+    font-size: 12px;
+    color: #b9b9c0;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+}
+
+.intro {
+    color: var(--muted);
+}
+
+.card {
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+}
+
+.section-title {
+    margin-bottom: 6px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.small {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.small + .small {
+    margin-top: 4px;
+}
+
+label {
+    display: block;
+    margin-top: 12px;
+    font-weight: 600;
+}
+
+.input {
+    width: 100%;
+    margin-top: 6px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--input-bg);
+    color: var(--text);
+    font: inherit;
+}
+
+.input:focus,
+.fn-formula:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -1px;
+}
+
+.actions-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.btn {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: var(--code-bg);
+}
+
+.btn-primary {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-text);
+}
+
+.btn-primary:hover {
+    border-color: var(--accent-hover);
+    background: var(--accent-hover);
+}
+
+.btn:focus-visible,
+summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.current-key {
+    margin-top: 10px;
+}
+
+.status-message {
+    min-height: 18px;
+    margin-top: 4px;
+    font-size: 12px;
+}
+
+.status-message.success {
+    color: var(--success);
+}
+
+.status-message.error {
+    color: var(--error);
+}
+
+code {
+    padding: 1px 4px;
+    border-radius: 4px;
+    background: var(--code-bg);
+    font-family: Consolas, monospace;
+    font-size: 12px;
+}
+
+.fn-group {
+    border-top: 1px solid var(--border);
+}
+
+.fn-group-title {
+    padding: 10px 0;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.fn-item {
+    margin: 0 0 8px 12px;
+}
+
+.fn-item > summary {
+    padding: 4px 0;
+    cursor: pointer;
+}
+
+.fn-name {
+    font-family: Consolas, monospace;
+    font-weight: 600;
+}
+
+.fn-desc {
+    display: block;
+    margin-left: 16px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.fn-params {
+    margin: 6px 0 8px 16px;
+    padding: 0;
+    font-size: 12px;
+    list-style: none;
+}
+
+.fn-params li {
+    margin-bottom: 4px;
+}
+
+.fn-insert {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-left: 16px;
+}
+
+.fn-formula {
+    flex: 1 1 100%;
+    min-width: 0;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--input-bg);
+    color: var(--text);
+    font-family: Consolas, monospace;
+    font-size: 12px;
+}
+
+.footer-note {
+    font-size: 12px;
+    color: var(--muted);
+}

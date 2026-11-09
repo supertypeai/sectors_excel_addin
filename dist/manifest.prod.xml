@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>43a70d22-2f94-420f-a318-47f040b85ae2</Id>
-  <Version>1.0.1.0</Version>
+  <Version>1.1.0.0</Version>
   <ProviderName>Supertype</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Sectors Financial (Prod)"/>
-  <Description DefaultValue="Access real-time and historical IDX financial data directly in Excel using Sectors API custom functions."/>
+  <Description DefaultValue="Access real-time and historical IDX, SGX and KLSE financial data directly in Excel using Sectors API custom functions."/>
   <IconUrl DefaultValue="https://sectors-excel-addin.fly.dev/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://sectors-excel-addin.fly.dev/assets/icon-64.png"/>
   <SupportUrl DefaultValue="https://supertype.ai/contact"/>
@@ -102,7 +102,7 @@
         <bt:String id="TaskpaneButton.Label" DefaultValue="Sectors API Key"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="Use Sectors custom functions to pull real-time IDX stock data, financials, valuations, and more into your spreadsheet. Open the task pane to enter your Sectors API key to get started."/>
+        <bt:String id="GetStarted.Description" DefaultValue="Use Sectors custom functions to pull real-time IDX, SGX and KLSE stock data, financials, valuations, and more into your spreadsheet. Open the task pane to enter your Sectors API key to get started."/>
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Open the Sectors task pane to manage your API key"/>
       </bt:LongStrings>
     </Resources>

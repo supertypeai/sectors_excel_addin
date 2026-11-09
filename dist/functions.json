@@ -2,13 +2,13 @@
     "allowCustomDataForDataTypeAny": true,
     "functions": [
         {
-            "description": "Screen IDX companies using SQL-like filters.",
+            "description": "Screen IDX companies using SQL-like filters. Any field used in where/orderBy is returned as an extra column.",
             "helpUrl": "https://sectors.app/api",
             "id": "SCREEN",
             "name": "SCREEN",
             "parameters": [
                 {
-                    "description": "SQL-like filter (e.g. \"sub_sector = 'banks' and pe_ttm < 15\").",
+                    "description": "SQL-like filter (e.g. \"sub_sector = 'banks' and free_float > 0.3\").",
                     "name": "where",
                     "type": "string"
                 },
@@ -21,6 +21,12 @@
                 {
                     "description": "Max results (default 50, max 200).",
                     "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip, for pagination.",
+                    "name": "offset",
                     "optional": true,
                     "type": "number"
                 }
@@ -48,14 +54,32 @@
             }
         },
         {
-            "description": "Get free float percentage for companies.",
+            "description": "Get free float for IDX companies (as a fraction, 0.35 = 35%). Use at most one filter.",
             "helpUrl": "https://sectors.app/api",
             "id": "FREE_FLOAT",
             "name": "FREE_FLOAT",
             "parameters": [
                 {
-                    "description": "Filter by subsector (e.g. \"banks\").",
+                    "description": "Subsector slug (e.g. \"banks\").",
                     "name": "subSector",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Sector slug (e.g. \"financials\").",
+                    "name": "sector",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Industry slug (e.g. \"oil-gas\").",
+                    "name": "industry",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Sub-industry slug (e.g. \"coal-production\").",
+                    "name": "subIndustry",
                     "optional": true,
                     "type": "string"
                 }
@@ -83,7 +107,7 @@
             }
         },
         {
-            "description": "Get company valuation: PE, PB, PS, PCF ratios over time.",
+            "description": "Get company valuation: PE, PB, PS, PCF ratios over time, with peer averages.",
             "helpUrl": "https://sectors.app/api",
             "id": "COMPANY_VALUATION",
             "name": "COMPANY_VALUATION",
@@ -100,10 +124,27 @@
             }
         },
         {
-            "description": "Get company financials: income stmt, balance sheet, ratios by year.",
+            "description": "Get company financials: income stmt, balance sheet, cash flow by year.",
             "helpUrl": "https://sectors.app/api",
             "id": "COMPANY_FINANCIALS",
             "name": "COMPANY_FINANCIALS",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get company financial ratios by year: profitability, leverage, liquidity, efficiency, capital.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "COMPANY_FINANCIAL_RATIOS",
+            "name": "COMPANY_FINANCIAL_RATIOS",
             "parameters": [
                 {
                     "description": "IDX ticker (e.g. \"BBCA\").",
@@ -134,7 +175,7 @@
             }
         },
         {
-            "description": "Get company major shareholders and institutional transaction flow.",
+            "description": "Get company major shareholders.",
             "helpUrl": "https://sectors.app/api",
             "id": "COMPANY_OWNERSHIP",
             "name": "COMPANY_OWNERSHIP",
@@ -143,6 +184,120 @@
                     "description": "IDX ticker (e.g. \"BBCA\").",
                     "name": "ticker",
                     "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get institutional transaction flow, top institutional buyers/sellers, whale investors and conglomerate group.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "COMPANY_INSTITUTIONAL_FLOW",
+            "name": "COMPANY_INSTITUTIONAL_FLOW",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get company key executives and executive shareholdings.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "COMPANY_MANAGEMENT",
+            "name": "COMPANY_MANAGEMENT",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get peer comparison: market cap, PE, PB, revenue and earnings for the company and its peers.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "COMPANY_PEERS",
+            "name": "COMPANY_PEERS",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get analyst forecasts: EPS/revenue estimates, growth forecasts and rating breakdown.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "COMPANY_FORECAST",
+            "name": "COMPANY_FORECAST",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get corporate actions for a company: AGMs, dividends, stock splits, rights issues, bonus, warrants.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "COMPANY_CORPORATE_ACTIONS",
+            "name": "COMPANY_CORPORATE_ACTIONS",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                },
+                {
+                    "description": "One of \"agm\", \"dividend\", \"stock_split\", \"right_issue\", \"bonus\", \"warrant\", \"upcoming_dividend\". Default: all.",
+                    "name": "actionType",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get shareholder composition by investor type (local \"_l\" and foreign \"_f\" holdings), monthly.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SHAREHOLDERS_COMPOSITION",
+            "name": "SHAREHOLDERS_COMPOSITION",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                },
+                {
+                    "description": "Calendar year (default current year, data from 2021).",
+                    "name": "year",
+                    "optional": true,
+                    "type": "number"
                 }
             ],
             "result": {
@@ -185,7 +340,7 @@
             }
         },
         {
-            "description": "Get subsector valuation: historical PE/PB/PS/PCF with percentile rank.",
+            "description": "Get subsector valuation: historical PE/PB/PS/PCF with rank among subsectors.",
             "helpUrl": "https://sectors.app/api",
             "id": "SUBSECTOR_VALUATION",
             "name": "SUBSECTOR_VALUATION",
@@ -206,6 +361,40 @@
             "helpUrl": "https://sectors.app/api",
             "id": "SUBSECTOR_GROWTH",
             "name": "SUBSECTOR_GROWTH",
+            "parameters": [
+                {
+                    "description": "Subsector slug (e.g. \"banks\").",
+                    "name": "subSector",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get subsector price stability: weighted max drawdown and relative std. dev. of close.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SUBSECTOR_STABILITY",
+            "name": "SUBSECTOR_STABILITY",
+            "parameters": [
+                {
+                    "description": "Subsector slug (e.g. \"banks\").",
+                    "name": "subSector",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get top companies in a subsector by market cap, growth, profit and revenue.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SUBSECTOR_TOP_COMPANIES",
+            "name": "SUBSECTOR_TOP_COMPANIES",
             "parameters": [
                 {
                     "description": "Subsector slug (e.g. \"banks\").",
@@ -240,6 +429,65 @@
                     "name": "reportDate",
                     "optional": true,
                     "type": "string"
+                },
+                {
+                    "description": "Match the nearest quarter when reportDate is not exact (default TRUE).",
+                    "name": "approx",
+                    "optional": true,
+                    "type": "boolean"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get the quarterly report dates available for a company.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "QUARTERLY_FINANCIAL_DATES",
+            "name": "QUARTERLY_FINANCIAL_DATES",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get each IDX company's latest reported quarter (useful to find new quarterly reports).",
+            "helpUrl": "https://sectors.app/api",
+            "id": "LATEST_QUARTERLY_DATES",
+            "name": "LATEST_QUARTERLY_DATES",
+            "parameters": [
+                {
+                    "description": "Only quarters within this calendar year.",
+                    "name": "year",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Only companies whose latest quarter is on/after this date (YYYY-MM-DD).",
+                    "name": "since",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Results per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
                 }
             ],
             "result": {
@@ -271,7 +519,18 @@
             }
         },
         {
-            "description": "Get daily close price, volume, and market cap for a ticker.",
+            "description": "List companies that have revenue segment data, and the years available.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "COMPANIES_WITH_SEGMENTS",
+            "name": "COMPANIES_WITH_SEGMENTS",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get daily OHLC price, volume, and market cap for a ticker (max 90 days per call).",
             "helpUrl": "https://sectors.app/api",
             "id": "DAILY_PRICE",
             "name": "DAILY_PRICE",
@@ -292,6 +551,36 @@
                     "name": "end",
                     "optional": true,
                     "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get the closing price of every IDX ticker for one trading day.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "DAILY_CLOSE_ALL",
+            "name": "DAILY_CLOSE_ALL",
+            "parameters": [
+                {
+                    "description": "Trading day (YYYY-MM-DD). Default: latest.",
+                    "name": "date",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Tickers per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Tickers to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
                 }
             ],
             "result": {
@@ -353,6 +642,24 @@
             }
         },
         {
+            "description": "Get the closing level of every IDX index for one trading day.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "INDEX_DAILY_ALL",
+            "name": "INDEX_DAILY_ALL",
+            "parameters": [
+                {
+                    "description": "Trading day (YYYY-MM-DD). Default: latest.",
+                    "name": "date",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
             "description": "Get most traded stocks by volume in a date range.",
             "helpUrl": "https://sectors.app/api",
             "id": "MOST_TRADED",
@@ -371,10 +678,22 @@
                     "type": "string"
                 },
                 {
-                    "description": "Number of stocks (default 5, max 10).",
+                    "description": "Number of stocks per day (default 5, max 10).",
                     "name": "nStock",
                     "optional": true,
                     "type": "number"
+                },
+                {
+                    "description": "Subsector slug filter (e.g. \"banks\").",
+                    "name": "subSector",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "TRUE ranks by volume x price instead of raw volume.",
+                    "name": "adjusted",
+                    "optional": true,
+                    "type": "boolean"
                 }
             ],
             "result": {
@@ -389,13 +708,13 @@
             "name": "TOP_MOVERS",
             "parameters": [
                 {
-                    "description": "\"top_gainers\", \"top_losers\", or both.",
+                    "description": "\"top_gainers\", \"top_losers\", or both (comma-separated).",
                     "name": "classifications",
                     "optional": true,
                     "type": "string"
                 },
                 {
-                    "description": "\"1d\", \"7d\", \"14d\", \"30d\", \"365d\".",
+                    "description": "Comma-separated: \"1d\", \"7d\", \"14d\", \"30d\", \"365d\".",
                     "name": "periods",
                     "optional": true,
                     "type": "string"
@@ -403,6 +722,18 @@
                 {
                     "description": "Number of stocks (default 5, max 10).",
                     "name": "nStock",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Subsector slug filter (e.g. \"banks\").",
+                    "name": "subSector",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Minimum market cap in billion IDR (default 5000).",
+                    "name": "minMcapBillion",
                     "optional": true,
                     "type": "number"
                 }
@@ -413,7 +744,7 @@
             }
         },
         {
-            "description": "Get stock price performance since IPO listing.",
+            "description": "Get stock price performance since IPO listing, plus IPO offering details.",
             "helpUrl": "https://sectors.app/api",
             "id": "IPO_PERFORMANCE",
             "name": "IPO_PERFORMANCE",
@@ -424,6 +755,573 @@
                     "type": "string"
                 }
             ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get daily net foreign inflow for a ticker.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "FOREIGN_FLOW",
+            "name": "FOREIGN_FLOW",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD). Default: end - 90 days.",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD). Default: today.",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get foreign flow for every IDX ticker on one trading day (default: top net foreign buys).",
+            "helpUrl": "https://sectors.app/api",
+            "id": "FOREIGN_FLOW_ALL",
+            "name": "FOREIGN_FLOW_ALL",
+            "parameters": [
+                {
+                    "description": "Trading day (YYYY-MM-DD). Default: latest.",
+                    "name": "date",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"net_foreign_inflow\", \"foreign_buy_idr\", \"foreign_sell_idr\" or \"symbol\"; \"-\" prefix for desc.",
+                    "name": "orderBy",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Tickers per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Tickers to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get IDX insider and major-holder filings.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "FILINGS",
+            "name": "FILINGS",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "symbol",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Subsector slug (e.g. \"banks\").",
+                    "name": "subSector",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD).",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD).",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"buy\", \"sell\" or \"others\".",
+                    "name": "transactionType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"insider\", \"institution\" or \"corporate-investor\".",
+                    "name": "holderType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Results per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Sector slug (e.g. \"financials\").",
+                    "name": "sector",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Comma-separated tag slugs.",
+                    "name": "tags",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get news articles for IDX (or mining) with filters.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "NEWS",
+            "name": "NEWS",
+            "parameters": [
+                {
+                    "description": "Comma-separated IDX tickers (e.g. \"BBCA,BBRI\").",
+                    "name": "symbols",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Comma-separated subsector slugs.",
+                    "name": "subSector",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD).",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD).",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Case-insensitive match on title.",
+                    "name": "keyword",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Results per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Comma-separated sector slugs.",
+                    "name": "sector",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Comma-separated tag slugs (see NEWS_TAGS).",
+                    "name": "tags",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"idx\" (default) or \"mining\".",
+                    "name": "extension",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Mining only, e.g. \"Coal\", \"Nickel\".",
+                    "name": "commodityType",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get IDX stock suspensions.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SUSPENSIONS",
+            "name": "SUSPENSIONS",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"GOTO\").",
+                    "name": "symbol",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD).",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD).",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Results per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get the IDX corporate actions calendar across all companies.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "CORPORATE_ACTIONS_CALENDAR",
+            "name": "CORPORATE_ACTIONS_CALENDAR",
+            "parameters": [
+                {
+                    "description": "Comma-separated: \"agm\",\"dividend\",\"stock_split\",\"right_issue\",\"bonus\",\"warrant\",\"upcoming_dividend\". Default: all.",
+                    "name": "actionType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD). Default: end - 30 days.",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD), may be in the future. Default: today + 30 days.",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "List IDX brokers with origin and cohort.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "BROKERS",
+            "name": "BROKERS",
+            "parameters": [
+                {
+                    "description": "\"institutional\", \"mixed\", \"retail\" or \"unknown\".",
+                    "name": "cohort",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"domestic\" or \"foreign\".",
+                    "name": "origin",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Rank brokers by daily gross or net traded value.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "TOP_BROKERS",
+            "name": "TOP_BROKERS",
+            "parameters": [
+                {
+                    "description": "Trading day (YYYY-MM-DD). Default: latest.",
+                    "name": "date",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"gross\" (default) or \"net\".",
+                    "name": "metric",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Number of brokers (max 90). Default: all.",
+                    "name": "nBrokers",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "\"all\", \"domestic\" or \"foreign\".",
+                    "name": "origin",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"all\", \"institutional\", \"mixed\", \"retail\" or \"unknown\".",
+                    "name": "cohort",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "TRUE ranks by the foreign-investor portion of flow.",
+                    "name": "foreign",
+                    "optional": true,
+                    "type": "boolean"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get one broker's daily buy/sell activity per stock.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "BROKER_ACTIVITY",
+            "name": "BROKER_ACTIVITY",
+            "parameters": [
+                {
+                    "description": "Broker code (e.g. \"YP\", \"AK\").",
+                    "name": "brokerCode",
+                    "type": "string"
+                },
+                {
+                    "description": "Limit to one IDX ticker.",
+                    "name": "symbol",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD). Default: end - 14 days.",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD). Default: today.",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get the stocks a broker accumulated and distributed most over a period.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "BROKER_TOP_STOCKS",
+            "name": "BROKER_TOP_STOCKS",
+            "parameters": [
+                {
+                    "description": "Broker code (e.g. \"YP\").",
+                    "name": "brokerCode",
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD). Default: end - 90 days.",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD). Default: today.",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Number of stocks per side (default 10, max 90).",
+                    "name": "nBrokers",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "TRUE ranks by the foreign-investor portion of flow.",
+                    "name": "foreign",
+                    "optional": true,
+                    "type": "boolean"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get daily broker buy/sell activity for one stock (broker summary).",
+            "helpUrl": "https://sectors.app/api",
+            "id": "BROKER_SUMMARY",
+            "name": "BROKER_SUMMARY",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                },
+                {
+                    "description": "Limit to one broker code.",
+                    "name": "brokerCode",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD). Default: end - 14 days.",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD). Default: today.",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get the top buying and selling brokers for one stock over a period.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "BROKER_SUMMARY_TOP",
+            "name": "BROKER_SUMMARY_TOP",
+            "parameters": [
+                {
+                    "description": "IDX ticker (e.g. \"BBCA\").",
+                    "name": "ticker",
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD). Default: end - 90 days.",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD). Default: today.",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Brokers per side (default 10, max 90).",
+                    "name": "nBrokers",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "\"all\", \"domestic\" or \"foreign\".",
+                    "name": "origin",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"all\", \"institutional\", \"mixed\", \"retail\" or \"unknown\".",
+                    "name": "cohort",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "TRUE ranks by the foreign-investor portion of flow.",
+                    "name": "foreign",
+                    "optional": true,
+                    "type": "boolean"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "List IDX sectors and subsectors (slugs used by other functions).",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SUBSECTORS",
+            "name": "SUBSECTORS",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "List IDX industries with their subsector.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "INDUSTRIES",
+            "name": "INDUSTRIES",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "List IDX sub-industries with their industry.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SUBINDUSTRIES",
+            "name": "SUBINDUSTRIES",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "List IDX news/filings tag slugs.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "NEWS_TAGS",
+            "name": "NEWS_TAGS",
+            "parameters": [],
             "result": {
                 "dimensionality": "matrix",
                 "type": "string"
@@ -464,7 +1362,7 @@
             "name": "KLSE_TOP_COMPANIES",
             "parameters": [
                 {
-                    "description": "\"dividend_yield\",\"revenue\",\"earnings\",\"market_cap\",\"pe\".",
+                    "description": "Comma-separated: \"dividend_yield\",\"revenue\",\"earnings\",\"market_cap\",\"pe\".",
                     "name": "classifications",
                     "optional": true,
                     "type": "string"
@@ -474,6 +1372,18 @@
                     "name": "sector",
                     "optional": true,
                     "type": "string"
+                },
+                {
+                    "description": "Companies per classification (default 5, max 10).",
+                    "name": "nStock",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Minimum market cap in million MYR (default 1000).",
+                    "name": "minMcapMillion",
+                    "optional": true,
+                    "type": "number"
                 }
             ],
             "result": {
@@ -561,14 +1471,77 @@
             }
         },
         {
+            "description": "List SGX sectors and subsectors.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_SUBSECTORS",
+            "name": "SGX_SUBSECTORS",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
             "description": "Get SGX companies in a sector.",
             "helpUrl": "https://sectors.app/api",
             "id": "SGX_COMPANIES",
             "name": "SGX_COMPANIES",
             "parameters": [
                 {
-                    "description": "SGX sector slug (e.g. \"financial-services\").",
+                    "description": "SGX sector slug (e.g. \"financial-services\") or label (e.g. \"Financial Services\").",
                     "name": "sector",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Screen SGX companies using SQL-like filters. Any field used in where/orderBy is returned as an extra column.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_SCREEN",
+            "name": "SGX_SCREEN",
+            "parameters": [
+                {
+                    "description": "SQL-like filter (e.g. \"sub_sector = 'Banks & Credit Services'\").",
+                    "name": "where",
+                    "type": "string"
+                },
+                {
+                    "description": "Sort field with optional \"-\" prefix for desc (e.g. \"-market_cap\").",
+                    "name": "orderBy",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Max results (default 50, max 200).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Screen SGX companies using natural language.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_SCREEN_NL",
+            "name": "SGX_SCREEN_NL",
+            "parameters": [
+                {
+                    "description": "Plain English query (e.g. \"top 5 SGX banks by market cap\").",
+                    "name": "query",
                     "type": "string"
                 }
             ],
@@ -584,7 +1557,7 @@
             "name": "SGX_TOP_COMPANIES",
             "parameters": [
                 {
-                    "description": "\"dividend_yield\",\"revenue\",\"earnings\",\"market_cap\",\"pe\".",
+                    "description": "Comma-separated: \"dividend_yield\",\"revenue\",\"earnings\",\"market_cap\",\"pe\".",
                     "name": "classifications",
                     "optional": true,
                     "type": "string"
@@ -594,6 +1567,18 @@
                     "name": "sector",
                     "optional": true,
                     "type": "string"
+                },
+                {
+                    "description": "Companies per classification (default 5, max 10).",
+                    "name": "nStock",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Minimum market cap in million SGD (default 1000).",
+                    "name": "minMcapMillion",
+                    "optional": true,
+                    "type": "number"
                 }
             ],
             "result": {
@@ -636,7 +1621,7 @@
             }
         },
         {
-            "description": "Get SGX company financial data with income stmt and balance sheet.",
+            "description": "Get SGX company financial data with income stmt and cash flow by year.",
             "helpUrl": "https://sectors.app/api",
             "id": "SGX_FINANCIALS",
             "name": "SGX_FINANCIALS",
@@ -662,6 +1647,1115 @@
                     "description": "SGX ticker (e.g. \"D05\").",
                     "name": "ticker",
                     "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get SGX company current and former management.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_MANAGEMENT",
+            "name": "SGX_MANAGEMENT",
+            "parameters": [
+                {
+                    "description": "SGX ticker (e.g. \"D05\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get SGX company major shareholders.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_OWNERSHIP",
+            "name": "SGX_OWNERSHIP",
+            "parameters": [
+                {
+                    "description": "SGX ticker (e.g. \"D05\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get SGX daily OHLC price and volume (max 90 days per call).",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_DAILY_PRICE",
+            "name": "SGX_DAILY_PRICE",
+            "parameters": [
+                {
+                    "description": "SGX ticker (e.g. \"D05\").",
+                    "name": "ticker",
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD).",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD).",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get the closing price of every SGX ticker for one trading day.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_DAILY_CLOSE_ALL",
+            "name": "SGX_DAILY_CLOSE_ALL",
+            "parameters": [
+                {
+                    "description": "Trading day (YYYY-MM-DD). Default: latest.",
+                    "name": "date",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Tickers per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Tickers to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get SGX corporate actions for a company: AGMs, dividends, upcoming dividends.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_CORPORATE_ACTIONS",
+            "name": "SGX_CORPORATE_ACTIONS",
+            "parameters": [
+                {
+                    "description": "SGX ticker (e.g. \"C07\").",
+                    "name": "ticker",
+                    "type": "string"
+                },
+                {
+                    "description": "e.g. \"agm\", \"dividend\", \"upcoming_dividend\". Default: all.",
+                    "name": "actionType",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get SGX insider and institutional filings.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_FILINGS",
+            "name": "SGX_FILINGS",
+            "parameters": [
+                {
+                    "description": "SGX ticker (e.g. \"D05\").",
+                    "name": "symbol",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD).",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD).",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"buy\", \"sell\", \"award\", \"transfer\" or \"others\".",
+                    "name": "transactionType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"insider\" or \"institution\".",
+                    "name": "holderType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Results per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get SGX news articles.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_NEWS",
+            "name": "SGX_NEWS",
+            "parameters": [
+                {
+                    "description": "Comma-separated SGX tickers (e.g. \"D05,U11\").",
+                    "name": "symbols",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Sector filter.",
+                    "name": "sector",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Sub-sector filter.",
+                    "name": "subSector",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD).",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD).",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Comma-separated tag slugs (see SGX_NEWS_TAGS).",
+                    "name": "tags",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Results per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "List SGX news tag slugs.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_NEWS_TAGS",
+            "name": "SGX_NEWS_TAGS",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get SGX share buybacks.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_BUYBACKS",
+            "name": "SGX_BUYBACKS",
+            "parameters": [
+                {
+                    "description": "SGX ticker (e.g. \"U11\").",
+                    "name": "symbol",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD).",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD).",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Results per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get SGX daily short-sell volume and value.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_SHORT_SELL",
+            "name": "SGX_SHORT_SELL",
+            "parameters": [
+                {
+                    "description": "SGX ticker (e.g. \"D05\").",
+                    "name": "symbol",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Start date (YYYY-MM-DD).",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "End date (YYYY-MM-DD).",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"date\", \"symbol\", \"value\" or \"volume\"; \"-\" prefix for desc (default \"-date\").",
+                    "name": "orderBy",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Results per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Screen SGX REITs using SQL-like filters (e.g. \"aggregate_leverage[latest] < 0.4\").",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_REIT_SCREEN",
+            "name": "SGX_REIT_SCREEN",
+            "parameters": [
+                {
+                    "description": "SQL-like filter.",
+                    "name": "where",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Sort field with optional \"-\" prefix for desc.",
+                    "name": "orderBy",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Results per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Screen SGX REITs using natural language.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_REIT_SCREEN_NL",
+            "name": "SGX_REIT_SCREEN_NL",
+            "parameters": [
+                {
+                    "description": "Plain English query (e.g. \"REITs with gearing below 35%\").",
+                    "name": "query",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get an SGX REIT's managers, sponsor, trustee and board.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_REIT_PROFILE",
+            "name": "SGX_REIT_PROFILE",
+            "parameters": [
+                {
+                    "description": "REIT ticker (e.g. \"A17U\").",
+                    "name": "ticker",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get an SGX REIT's yearly performance: NPI, DPU, gearing, occupancy, WALE.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_REIT_PERFORMANCE",
+            "name": "SGX_REIT_PERFORMANCE",
+            "parameters": [
+                {
+                    "description": "REIT ticker (e.g. \"A17U\").",
+                    "name": "ticker",
+                    "type": "string"
+                },
+                {
+                    "description": "Financial year (default latest).",
+                    "name": "financialYear",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get an SGX REIT's property portfolio.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_REIT_PROPERTIES",
+            "name": "SGX_REIT_PROPERTIES",
+            "parameters": [
+                {
+                    "description": "REIT ticker (e.g. \"A17U\").",
+                    "name": "ticker",
+                    "type": "string"
+                },
+                {
+                    "description": "Financial year (default latest).",
+                    "name": "financialYear",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get an SGX REIT's top tenants.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_REIT_TENANTS",
+            "name": "SGX_REIT_TENANTS",
+            "parameters": [
+                {
+                    "description": "REIT ticker (e.g. \"AJBU\").",
+                    "name": "ticker",
+                    "type": "string"
+                },
+                {
+                    "description": "Financial year (default latest).",
+                    "name": "financialYear",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get an SGX REIT's trade mix (income by trade category).",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_REIT_TRADE_MIX",
+            "name": "SGX_REIT_TRADE_MIX",
+            "parameters": [
+                {
+                    "description": "REIT ticker (e.g. \"C38U\").",
+                    "name": "ticker",
+                    "type": "string"
+                },
+                {
+                    "description": "Financial year (default latest).",
+                    "name": "financialYear",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get SGX REIT property acquisitions and divestments.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "SGX_REIT_TRANSACTIONS",
+            "name": "SGX_REIT_TRANSACTIONS",
+            "parameters": [
+                {
+                    "description": "REIT ticker (e.g. \"C38U\").",
+                    "name": "symbol",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Earliest completed date (YYYY-MM-DD).",
+                    "name": "start",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Latest completed date (YYYY-MM-DD).",
+                    "name": "end",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"acquisition\" or \"divestment\".",
+                    "name": "transactionType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Financial year.",
+                    "name": "financialYear",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "\"completed_date\", \"symbol\" or \"transaction_price\"; \"-\" prefix for desc.",
+                    "name": "orderBy",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Results per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "List commodities with price history available.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_COMMODITIES",
+            "name": "MINING_COMMODITIES",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get monthly commodity price history (max 3-year range).",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_COMMODITY_PRICE",
+            "name": "MINING_COMMODITY_PRICE",
+            "parameters": [
+                {
+                    "description": "Commodity name (e.g. \"Coal\", \"Gold\").",
+                    "name": "commodity",
+                    "type": "string"
+                },
+                {
+                    "description": "Start year (default current year - 2).",
+                    "name": "startYear",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "End year inclusive (default current year).",
+                    "name": "endYear",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "List mining companies.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_COMPANIES",
+            "name": "MINING_COMPANIES",
+            "parameters": [
+                {
+                    "description": "e.g. \"Coal\", \"Nickel\", \"Gold\".",
+                    "name": "commodityType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Search name, IDX symbol, slug or operations.",
+                    "name": "keyword",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"Mine Owner\", \"Contractor\", \"Holding\", \"Trader\", \"Consultant\" or \"Manufacturer\".",
+                    "name": "companyType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "TRUE returns only companies with financial data.",
+                    "name": "hasFinancials",
+                    "optional": true,
+                    "type": "boolean"
+                },
+                {
+                    "description": "Results per page (default 20).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get a mining company's profile and licenses.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_COMPANY",
+            "name": "MINING_COMPANY",
+            "parameters": [
+                {
+                    "description": "Company slug from MINING_COMPANIES (e.g. \"pt-adaro-andalan-indonesia-tbk\").",
+                    "name": "slug",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get a mining company's financials (USD) for a year.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_COMPANY_FINANCIALS",
+            "name": "MINING_COMPANY_FINANCIALS",
+            "parameters": [
+                {
+                    "description": "Company slug (e.g. \"pt-adaro-andalan-indonesia-tbk\").",
+                    "name": "slug",
+                    "type": "string"
+                },
+                {
+                    "description": "Year (default latest).",
+                    "name": "year",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get a mining company's parent companies and subsidiaries.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_COMPANY_OWNERSHIP",
+            "name": "MINING_COMPANY_OWNERSHIP",
+            "parameters": [
+                {
+                    "description": "Company slug (e.g. \"pt-adaro-andalan-indonesia-tbk\").",
+                    "name": "slug",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get a mining company's production, sales, strip ratio and reserves by commodity.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_COMPANY_PERFORMANCE",
+            "name": "MINING_COMPANY_PERFORMANCE",
+            "parameters": [
+                {
+                    "description": "Company slug (e.g. \"pt-adaro-andalan-indonesia-tbk\").",
+                    "name": "slug",
+                    "type": "string"
+                },
+                {
+                    "description": "e.g. \"Coal\", \"Nickel\".",
+                    "name": "commodityType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Year (default latest).",
+                    "name": "year",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get a mining company's sales by destination country.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_SALES_DESTINATION",
+            "name": "MINING_SALES_DESTINATION",
+            "parameters": [
+                {
+                    "description": "Company slug (e.g. \"pt-adaro-andalan-indonesia-tbk\").",
+                    "name": "slug",
+                    "type": "string"
+                },
+                {
+                    "description": "Year (default latest).",
+                    "name": "year",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "List mining contracts between mine owners and contractors.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_CONTRACTS",
+            "name": "MINING_CONTRACTS",
+            "parameters": [
+                {
+                    "description": "Contractor company slug.",
+                    "name": "contractor",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Mine owner company slug.",
+                    "name": "mineOwner",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get Indonesia's top export destinations for a commodity.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_EXPORTS",
+            "name": "MINING_EXPORTS",
+            "parameters": [
+                {
+                    "description": "\"Coal\", \"Copper\" or \"Gold\" (e.g. \"Coal\").",
+                    "name": "commodityType",
+                    "type": "string"
+                },
+                {
+                    "description": "Year (e.g. 2024).",
+                    "name": "year",
+                    "type": "number"
+                },
+                {
+                    "description": "Countries to return (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get global production, reserves and trade by country for a commodity.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_GLOBAL_COMMODITY",
+            "name": "MINING_GLOBAL_COMMODITY",
+            "parameters": [
+                {
+                    "description": "e.g. \"Coal\", \"Nickel\" (required if no country).",
+                    "name": "commodityType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "e.g. \"Australia\" (required if no commodity).",
+                    "name": "country",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Results (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get Indonesia's total yearly production for a commodity.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_TOTAL_PRODUCTION",
+            "name": "MINING_TOTAL_PRODUCTION",
+            "parameters": [
+                {
+                    "description": "\"Coal\", \"Copper\", \"Gold\" or \"Nickel\" (e.g. \"Coal\").",
+                    "name": "commodityType",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "List mining licenses (IUP, IUPK, etc.).",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_LICENSES",
+            "name": "MINING_LICENSES",
+            "parameters": [
+                {
+                    "description": "Province (exact, e.g. \"Kalimantan Timur\").",
+                    "name": "province",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "e.g. \"Coal\", \"Nickel\".",
+                    "name": "commodityType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Company slug.",
+                    "name": "company",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "e.g. \"IUP\", \"IUPK\".",
+                    "name": "licenseType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"Eksplorasi\" or \"Operasi Produksi\".",
+                    "name": "activity",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "TRUE for licenses expiring within 365 days.",
+                    "name": "expiringSoon",
+                    "optional": true,
+                    "type": "boolean"
+                },
+                {
+                    "description": "e.g. \"license_expiry_date\", \"-licensed_area_ha\".",
+                    "name": "orderBy",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Results per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "List mining license (WIUP/WIUPK) auctions.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_LICENSE_AUCTIONS",
+            "name": "MINING_LICENSE_AUCTIONS",
+            "parameters": [
+                {
+                    "description": "Province (e.g. \"Sulawesi Selatan\").",
+                    "name": "province",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "e.g. \"Nickel\", \"Coal\".",
+                    "name": "commodityType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Company name that participated (partial match).",
+                    "name": "participant",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Auction status (e.g. \"Lelang Selesai\").",
+                    "name": "status",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "\"WIUP\" or \"WIUPK\".",
+                    "name": "areaType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "e.g. \"-winner_date\", \"-licensed_area_ha\".",
+                    "name": "orderBy",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Results per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get one mining license auction with its phases and participants.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_LICENSE_AUCTION",
+            "name": "MINING_LICENSE_AUCTION",
+            "parameters": [
+                {
+                    "description": "WIUP code from MINING_LICENSE_AUCTIONS (e.g. \"1752072062023002\").",
+                    "name": "wiupCode",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "List mining sites with production and strip ratio.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_SITES",
+            "name": "MINING_SITES",
+            "parameters": [
+                {
+                    "description": "Province (exact).",
+                    "name": "province",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "e.g. \"Coal\", \"Nickel\".",
+                    "name": "commodityType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Company slug.",
+                    "name": "company",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Reporting year.",
+                    "name": "year",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "e.g. \"-production_volume\", \"-year\".",
+                    "name": "orderBy",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Minimum production volume.",
+                    "name": "minProduction",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results per page (default 20, max 30).",
+                    "name": "limit",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Results to skip.",
+                    "name": "offset",
+                    "optional": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get one mining site's detail, reserves and location.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_SITE",
+            "name": "MINING_SITE",
+            "parameters": [
+                {
+                    "description": "Site slug from MINING_SITES (e.g. \"batubara-benhes-3\").",
+                    "name": "slug",
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "List provinces, commodities and years with resources & reserves data.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_RESERVES_INDEX",
+            "name": "MINING_RESERVES_INDEX",
+            "parameters": [],
+            "result": {
+                "dimensionality": "matrix",
+                "type": "string"
+            }
+        },
+        {
+            "description": "Get resources and reserves for a province, by year and commodity.",
+            "helpUrl": "https://sectors.app/api",
+            "id": "MINING_RESERVES",
+            "name": "MINING_RESERVES",
+            "parameters": [
+                {
+                    "description": "Province (e.g. \"Kalimantan Timur\").",
+                    "name": "province",
+                    "type": "string"
+                },
+                {
+                    "description": "e.g. \"Coal\", \"Nickel\".",
+                    "name": "commodityType",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Year.",
+                    "name": "year",
+                    "optional": true,
+                    "type": "number"
                 }
             ],
             "result": {
